@@ -1,3 +1,5 @@
+# Ejercicio 2: Geometría básica 3D
+
 Mediante este ejercicio el alumno debe familiarizarse con las diferentes figuras 3D que proporciona la biblioteca THREE.JS y conocer sus principales parámetros.  
 A tener en cuenta:
 

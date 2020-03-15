@@ -48,17 +48,20 @@ class Cone extends THREE.Object3D {
       var folder = gui.addFolder(titleGui);
 
       // Control de barra
-      folder.add(this.guiControls, 'radius', 0.1, 5.0, 0.1).name('Radio : ').listen();
-      folder.add(this.guiControls, 'height', 0.1, 5.0, 0.1).name('Altura : ').listen();
-      folder.add(this.guiControls, 'radialSegments', 3.0, 20.0, 1.0).name('Resolución : ').listen();
+      var that = this;
+      folder.add(this.guiControls, 'radius', 0.1, 5.0, 0.1).name('Radio : ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'height', 0.1, 5.0, 0.1).name('Altura : ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'radialSegments', 3.0, 20.0, 1.0).name('Resolución : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
       folder.add(this.guiControls, 'reset').name('[ Reset ]');
    }
 
-   update() {
+   cambiarGeometria() {
       // Volver a crear la geometría sólo si ha cambiado
       this.cone.geometry = new THREE.ConeGeometry(this.guiControls.radius, this.guiControls.height, this.guiControls.radialSegments);
+   }
 
+   update() {
       // Movimiento continuo del objeto
       this.cone.rotation.z += 0.01;
       this.cone.rotation.y += 0.01;

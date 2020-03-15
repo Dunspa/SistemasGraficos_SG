@@ -51,18 +51,21 @@ class Torus extends THREE.Object3D {
       var folder = gui.addFolder(titleGui);
 
       // Control de barra
-      folder.add(this.guiControls, 'radius', 0.1, 5.0, 0.1).name('Radio: ').listen();
-      folder.add(this.guiControls, 'tube', 0.1, 5.0, 0.1).name('Tubo: ').listen();
-      folder.add(this.guiControls, 'radialSegments', 3.0, 20.0, 1.0).name('Resolución radio : ').listen();
-      folder.add(this.guiControls, 'tubularSegments', 3.0, 20.0, 1.0).name('Resolución tubo : ').listen();
+      var that = this;
+      folder.add(this.guiControls, 'radius', 0.1, 5.0, 0.1).name('Radio: ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'tube', 0.1, 5.0, 0.1).name('Tubo: ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'radialSegments', 3.0, 20.0, 1.0).name('Resolución radio : ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'tubularSegments', 3.0, 20.0, 1.0).name('Resolución tubo : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
       folder.add(this.guiControls, 'reset').name('[ Reset ]');
    }
 
-   update() {
+   cambiarGeometria() {
       // Volver a crear la geometría sólo si ha cambiado
       this.torus.geometry = new THREE.TorusGeometry(this.guiControls.radius, this.guiControls.tube, this.guiControls.radialSegments, this.guiControls.tubularSegments);
+   }
 
+   update() {
       // Movimiento continuo del objeto
       this.torus.rotation.z += 0.01;
       this.torus.rotation.y += 0.01;

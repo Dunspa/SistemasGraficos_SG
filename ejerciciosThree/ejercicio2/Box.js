@@ -49,11 +49,16 @@ class Box extends THREE.Object3D {
       // Estas lineas son las que añaden los componentes de la interfaz
       // Las tres cifras indican un valor mínimo, un máximo y el incremento
       // El método   listen()   permite que si se cambia el valor de la variable en código, el deslizador de la interfaz se actualice
-      folder.add(this.guiControls, 'sizeX', 0.1, 5.0, 0.1).name('Tamaño X : ').listen();
-      folder.add(this.guiControls, 'sizeY', 0.1, 5.0, 0.1).name('Tamaño Y : ').listen();
-      folder.add(this.guiControls, 'sizeZ', 0.1, 5.0, 0.1).name('Tamaño Z : ').listen();
+      var that = this;
+      folder.add(this.guiControls, 'sizeX', 0.1, 5.0, 0.1).name('Tamaño X : ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'sizeY', 0.1, 5.0, 0.1).name('Tamaño Y : ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'sizeZ', 0.1, 5.0, 0.1).name('Tamaño Z : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
       folder.add(this.guiControls, 'reset').name('[ Reset ]');
+   }
+
+   cambiarGeometria() {
+      this.box.geometry = new THREE.BoxGeometry(this.guiControls.sizeX, this.guiControls.sizeY, this.guiControls.sizeZ);
    }
 
    update() {
@@ -63,11 +68,10 @@ class Box extends THREE.Object3D {
       // Después, la rotación en Y
       // Luego, la rotación en X
       // Y por último la traslación
-      this.box.scale.set(this.guiControls.sizeX, this.guiControls.sizeY, this.guiControls.sizeZ);
 
       // Movimiento continuo del objeto
-      this.box.rotation.z += 0.01;
-      this.box.rotation.y += 0.01;
-      this.box.rotation.x += 0.01;
+      //this.box.rotation.z += 0.01;
+      //this.box.rotation.y += 0.01;
+      //this.box.rotation.x += 0.01;
    }
 }

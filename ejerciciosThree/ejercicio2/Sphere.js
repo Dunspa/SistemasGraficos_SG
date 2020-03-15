@@ -49,17 +49,20 @@ class Sphere extends THREE.Object3D {
       var folder = gui.addFolder(titleGui);
 
       // Control de barra
-      folder.add(this.guiControls, 'radius', 0.1, 5.0, 0.1).name('Radio: ').listen();
-      folder.add(this.guiControls, 'widthSegments', 3.0, 30.0, 1.0).name('Resolución ancho: ').listen();
-      folder.add(this.guiControls, 'heightSegments', 3.0, 30.0, 1.0).name('Resolución alto : ').listen();
+      var that = this;
+      folder.add(this.guiControls, 'radius', 0.1, 5.0, 0.1).name('Radio: ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'widthSegments', 3.0, 30.0, 1.0).name('Resolución ancho: ').onChange(function(value){that.cambiarGeometria()}).listen();
+      folder.add(this.guiControls, 'heightSegments', 3.0, 30.0, 1.0).name('Resolución alto : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
       folder.add(this.guiControls, 'reset').name('[ Reset ]');
    }
 
-   update() {
+   cambiarGeometria() {
       // Volver a crear la geometría sólo si ha cambiado
       this.sphere.geometry = new THREE.SphereGeometry(this.guiControls.radius, this.guiControls.widthSegments, this.guiControls.heightSegments);
+   }
 
+   update() {
       // Movimiento continuo del objeto
       this.sphere.rotation.z += 0.01;
       this.sphere.rotation.y += 0.01;
