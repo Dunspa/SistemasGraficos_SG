@@ -1,0 +1,3 @@
+# Ejercicio 10: Movimientos sincronizados
+
+**c)** Una esfera, que al igual que la anterior, gira por la cara exterior de un cilindro empleando 4 segundos en un giro completo. En esta ocasión, la interfaz gráfica de usuario permite aumentar uno de los diámetros del cilindro resultando un prisma con base elíptica. El parámetro extensión indica en cuánto es más grande un diámetro con respecto al otro.
