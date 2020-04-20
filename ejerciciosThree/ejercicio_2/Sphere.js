@@ -54,7 +54,7 @@ class Sphere extends THREE.Object3D {
       folder.add(this.guiControls, 'widthSegments', 3.0, 30.0, 1.0).name('Resolución ancho: ').onChange(function(value){that.cambiarGeometria()}).listen();
       folder.add(this.guiControls, 'heightSegments', 3.0, 30.0, 1.0).name('Resolución alto : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
-      folder.add(this.guiControls, 'reset').name('[ Reset ]');
+      folder.add(this.guiControls, 'reset').name('[ Reset ]').onChange(function(value){that.cambiarGeometria()}).listen();
    }
 
    cambiarGeometria() {

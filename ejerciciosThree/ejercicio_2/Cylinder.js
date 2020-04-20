@@ -57,7 +57,7 @@ class Cylinder extends THREE.Object3D {
       folder.add(this.guiControls, 'height', 0.1, 5.0, 0.1).name('Altura : ').onChange(function(value){that.cambiarGeometria()}).listen();
       folder.add(this.guiControls, 'radialSegments', 3.0, 20.0, 1.0).name('Resolución : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
-      folder.add(this.guiControls, 'reset').name('[ Reset ]');
+      folder.add(this.guiControls, 'reset').name('[ Reset ]').onChange(function(value){that.cambiarGeometria()}).listen();
    }
 
    cambiarGeometria() {

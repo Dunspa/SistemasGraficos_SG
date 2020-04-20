@@ -54,7 +54,7 @@ class Box extends THREE.Object3D {
       folder.add(this.guiControls, 'sizeY', 0.1, 5.0, 0.1).name('Tamaño Y : ').onChange(function(value){that.cambiarGeometria()}).listen();
       folder.add(this.guiControls, 'sizeZ', 0.1, 5.0, 0.1).name('Tamaño Z : ').onChange(function(value){that.cambiarGeometria()}).listen();
 
-      folder.add(this.guiControls, 'reset').name('[ Reset ]');
+      folder.add(this.guiControls, 'reset').name('[ Reset ]').onChange(function(value){that.cambiarGeometria()}).listen();
    }
 
    cambiarGeometria() {
