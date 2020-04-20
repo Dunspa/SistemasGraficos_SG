@@ -15,8 +15,6 @@ class Elipse extends THREE.Object3D {
       var geomElipse = new THREE.ExtrudeGeometry(curvaElipse, options);
       var matElipse = new THREE.MeshNormalMaterial({opacity: 0.35, transparent: true});
       this.elipse = new THREE.Mesh(geomElipse, matElipse);
-      //this.elipse.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), Math.PI/2);
-      //this.elipse.translateZ(-10);
 
       // Camino en forma de elipse para la animación
       curvaElipse = new THREE.EllipseCurve(0.0, 0.0, 22.0 + this.guiControls.extension, 22.0);
@@ -25,20 +23,14 @@ class Elipse extends THREE.Object3D {
       for (var i = 0 ; i < puntosElipse.length ; i++) {
          vector.push(new THREE.Vector3(puntosElipse[i]['x'], puntosElipse[i]['y'], 5));
       }
-
       this.spline = new THREE.CatmullRomCurve3(vector);
       var geomCamino = new THREE.Geometry();
       geomCamino.vertices = this.spline.getPoints(100);
-      var matCamino = new THREE.LineBasicMaterial({color: 0xff0000});
-      this.camino = new THREE.Line(geomCamino, matCamino);
-      this.add(this.camino);
 
       // Esfera que girará alrededor de la elipse
       var geomEsfera = new THREE.SphereGeometry(2.0, 20.0, 20.0);
       var matEsfera = new THREE.MeshNormalMaterial();
       this.esfera = new THREE.Mesh(geomEsfera, matEsfera);
-      //this.esfera.translateY(2.0);
-      //this.esfera.translateX(this.guiControls.extension + 20.0 + 2.0);
 
       this.elipsoide = new THREE.Object3D();
       this.elipsoide.add(this.esfera);
@@ -113,8 +105,6 @@ class Elipse extends THREE.Object3D {
       var curvaElipse = new THREE.Shape(puntosElipse);
       var options = {steps: 1, depth: 10, bevelEnabled: false};
       this.elipse.geometry = new THREE.ExtrudeGeometry(curvaElipse, options);
-      //this.elipse.geometry.rotateX(Math.PI/2);
-      //this.elipse.geometry.translate(0, 10, 0);
 
       curvaElipse = new THREE.EllipseCurve(0.0, 0.0, 22.0 + this.guiControls.extension, 22.0);
       puntosElipse = curvaElipse.getPoints(50);
@@ -129,25 +119,6 @@ class Elipse extends THREE.Object3D {
    update() {
       // Update de la animación
       TWEEN.update();
-
-      /*var tiempoActual = Date.now();
-      var segundosTranscurridos = (tiempoActual - this.tiempoAnterior) / 1000.0;
-
-      // Animación en camino
-      var looptime = 4000; // 4 segundos
-      var t = (tiempoActual % looptime) / looptime;
-      // Posición del objeto a animar
-      var posicion = this.camino.getPointAt(t);
-      this.elipsoide.position.copy(posicion);
-      // Orientación del objeto a animar
-      var tangente = this.camino.getTangentAt(t);
-      posicion.add(tangente);
-      this.elipsoide.lookAt(posicion);*/
-
-      //this.esfera.position.x = this.guiControls.extension + 20.0 + 2.0;
-      //this.elipsoide.rotation.y += (2*Math.PI / 4.0) * segundosTranscurridos; // Recorrer una vuelta entera (2*PI) en 4 segundos
-
-      //this.tiempoAnterior = tiempoActual;
    }
 }
  
