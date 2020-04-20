@@ -34,10 +34,10 @@ class Lathe extends THREE.Object3D {
       this.add(this.lathe);
 
       // Para crear una línea visible, como en el vídeo
-      var lineGeom = new THREE.Geometry();
-      lineGeom.vertices.push(this.points);
+      var lineGeom = new THREE.Geometry().setFromPoints(this.points)
       var lineMat = new THREE.LineBasicMaterial({color: 0x0000ff});
       this.line = new THREE.Line(lineGeom, lineMat);
+      this.line.translateX(2.0);
       this.add(this.line);
    }
 
