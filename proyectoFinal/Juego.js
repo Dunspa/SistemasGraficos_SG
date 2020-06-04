@@ -23,9 +23,6 @@ class Juego extends Physijs.Scene {
       // Raycaster que se usará para elegir (pick) las figuras que se empujarán
       this.raycaster = new THREE.Raycaster();
       
-      // Se crea la gui
-      this.createGUI();
-      
       // Construimos los distinos elementos que tendremos en la escena
       
       // Se crean y añaden luces a la escena
@@ -35,11 +32,29 @@ class Juego extends Physijs.Scene {
 
       this.createBackground();
 
+      this.createTower();
+
       // El personaje principal
       this.createPlayer();
 
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
+
+      // Animación del inicio del juego
+      var that = this;
+      var origen = {x: 800.0};
+      var destino = {x: 30.0};
+      Juego.ANIMACIONINICIO = new TWEEN.Tween(origen).to(destino, 4000)
+         .easing(TWEEN.Easing.Quadratic.InOut)
+         .onUpdate (function () {
+            that.camera.position.set(that.player.position.x, that.player.position.y + 5, that.player.position.z - origen.x);
+            var look = new THREE.Vector3(that.player.position.x, that.player.position.y, that.player.position.z); 
+            that.camera.lookAt(look); 
+         })
+         .onComplete (function () {
+            origen.x = 0.0;
+            Juego.START = true;
+         });
 
       //var constraint = new Physijs.DOFConstraint(this.player, this.playerjump, this.player.position);
       //this.addConstraint(constraint);
@@ -116,13 +131,26 @@ class Juego extends Physijs.Scene {
    }
 
    createBackground() {
-      var geometry = new THREE.SphereGeometry(70, 30, 30);
+      var geometry = new THREE.SphereGeometry(200, 30, 30);
       // Como material se crea uno a partir de una textura
       var texture = new THREE.TextureLoader().load('./imgs/night.png');
-      var material = new THREE.MeshPhongMaterial({map: texture, side: THREE.BackSide});
+      var material = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
       this.background = new THREE.Mesh(geometry, material);
 
       this.add(this.background);
+   }
+
+   createTower() {
+      var geometry = new THREE.CylinderGeometry(20, 10, 100);
+      var texture = new THREE.TextureLoader().load('./imgs/tower.jpg');
+      var material = new THREE.MeshPhongMaterial({map: texture});
+      var physiMaterial = Physijs.createMaterial(material, 1.0, 0.0);
+      this.tower = new Physijs.CylinderMesh(geometry, physiMaterial, 0);
+      
+      this.tower.translateZ(100);
+      this.tower.translateY(50);
+
+      this.add(this.tower);
    }
 
    createPlayer() {
@@ -172,9 +200,9 @@ class Juego extends Physijs.Scene {
       //   Los planos de recorte cercano y lejano
       this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
       // También se indica dónde se coloca
-      this.camera.position.set(this.player.position.x, this.player.position.y + 10, this.player.position.z - 10);
+      this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 800);
       // Y hacia dónde mira
-      var look = this.player.position;
+      var look = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
       this.camera.lookAt(look);
       this.add (this.camera);
       
@@ -189,8 +217,8 @@ class Juego extends Physijs.Scene {
    }
    
    createGround() {
-      var tamaX = 150;
-      var tamaY = 150;
+      var tamaX = 300;
+      var tamaY = 300;
       var resolucion = 50;
       
       var sueloGeometria = new THREE.PlaneGeometry(tamaX, tamaY, resolucion, resolucion);
@@ -225,28 +253,6 @@ class Juego extends Physijs.Scene {
                o.material.wireframe = false;
          }
       );
-   }
-   
-   createGUI () {
-      // Se crea una interfaz gráfica de usuario vacia
-      var gui = new dat.GUI();
-   
-      var that = this;
-      // Se definen los controles que se modificarán desde la GUI
-      // En este caso la intensidad de la luz y si se muestran o no los ejes
-      this.guiControls = new function() {
-         // En el contexto de una función   this   alude a la función
-         this.lightIntensity = 0.5;
-         this.push = 1.0;   // La fuerza de los empujones que se le dan a las figuras
-      }
-
-      gui.add (this.guiControls, 'push', -10, 10, 1).name ('Fuerza');
-      
-      // Se crea una sección para los controles de esta clase
-      var folder = gui.addFolder ('Luz y Ejes');
-      
-      // Se le añade un control para la intensidad de la luz
-      folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');    
    }
    
    createLights () {
@@ -305,6 +311,13 @@ class Juego extends Physijs.Scene {
       this.camera.aspect = ratio;
       this.camera.updateProjectionMatrix();
    }
+
+   updateCamera(){
+      this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 30); 
+      this.camera.up.set(0, 1, 0);
+      var look = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z); 
+      this.camera.lookAt(look); 
+   }
    
    update () {
       // Se solicita que La próxima vez que haya que refrescar la ventana se ejecute una determinada función, en este caso la funcion render.
@@ -314,37 +327,37 @@ class Juego extends Physijs.Scene {
       
       // Se actualizan los elementos de la escena para cada frame
       // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
-      this.spotLight.intensity = this.guiControls.lightIntensity;
+      this.spotLight.intensity = 0.5;
       
       // Se actualiza la posición de la cámara según su controlador
-      this.cameraControl.update();
+      if (Juego.START) {
+         this.cameraControl.update();
+         this.updateCamera();
 
-      //this.camera.position.set(this.player.position.x - (200 * Math.sin(this.camera.rotation.x)), this.player.position.y + 50, this.player.position.z - (200 * Math.cos(this.camera.rotation.z)));
+         if (this.player.forward) {
+            this.player.translateZ(0.1);
+            this.player.__dirtyPosition = true;
+         } else if (this.player.backward) {
+            this.player.translateZ(-0.1);
+            this.player.__dirtyPosition = true;
+         }
 
-      if (this.player.forward) {
-         this.player.translateZ(0.1);
-         this.player.__dirtyPosition = true;
-      } else if (this.player.backward) {
-         this.player.translateZ(-0.1);
-         this.player.__dirtyPosition = true;
+         if (this.player.left) {
+            this.player.rotateY(0.1);
+            this.player.__dirtyRotation = true;
+         } else if (this.player.right) {
+            this.player.rotateY(-0.1);
+            this.player.__dirtyRotation = true;
+         }
+
+         if (this.player.jump) {
+            var offset = new THREE.Vector3(0, 1, 0);
+            this.player.applyCentralImpulse(offset.normalize().multiplyScalar(5));
+            this.player.__dirtyPosition;
+         }
       }
 
-      if (this.player.left) {
-         this.player.rotateY(0.1);
-         this.player.__dirtyRotation = true;
-      } else if (this.player.right) {
-         this.player.rotateY(-0.1);
-         this.player.__dirtyRotation = true;
-      }
-
-      if (this.player.jump) {
-         var offset = new THREE.Vector3(0, 1, 0);
-         this.player.applyCentralImpulse(offset.normalize().multiplyScalar(5));
-         this.player.__dirtyPosition;
-      }
-
-      this.camera.position.set(this.player.position.x, this.player.position.y + 1, this.player.position.z - 10);
-      this.camera.up.set(0, 1, 0);
+      TWEEN.update();
       
       // Se le pide al motor de física que actualice las figuras según sus leyes
       this.simulate ();
@@ -355,23 +368,34 @@ class Juego extends Physijs.Scene {
 }
 
 // Constantes que se usan en la clase
-
+Juego.START = false;
+Juego.ANIMACIONINICIO;
 
 /// La función principal
 $(function () {
-  // Se crea la escena
-  var scene = new Juego("#WebGL-output");
-  
-  // listeners
-  // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
-  window.addEventListener ("resize", () => scene.onWindowResize());
-  // Definimos un listener para el mouse down del ratón para los impulsos a las figuras
-  window.addEventListener ("mousedown", () => scene.onMouseDown(event), true);
-  // Listeners para el movimiento del personaje
-  window.addEventListener ("keydown", (event) => scene.onKeyDown(event), true);
-  window.addEventListener ("keyup", () => scene.onKeyUp(event));
-  
-  // Finalmente, realizamos el primer renderizado.
-  scene.update();
+   // Se crea la escena
+   var scene = new Juego("#WebGL-output");
+   
+   // Se inicia el juego
+   var that = this;
+   document.getElementById("start").addEventListener("click", function () {
+      document.getElementById("WebGL-output").style.opacity = 1.0;
+      document.getElementById("start").style.display = "none";
+
+      // Animación TWEEN del inicio
+      Juego.ANIMACIONINICIO.start();
+   });
+   
+   // listeners
+   // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
+   window.addEventListener ("resize", () => scene.onWindowResize());
+   // Definimos un listener para el mouse down del ratón para los impulsos a las figuras
+   window.addEventListener ("mousedown", () => scene.onMouseDown(event), true);
+   // Listeners para el movimiento del personaje
+   window.addEventListener ("keydown", (event) => scene.onKeyDown(event), true);
+   window.addEventListener ("keyup", () => scene.onKeyUp(event));
+   
+   // Finalmente, realizamos el primer renderizado.
+   scene.update();
 });
 
