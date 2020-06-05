@@ -31,11 +31,11 @@ class Juego extends Physijs.Scene {
       // IMPORTANTE: Los elementos que se desee sean tenidos en cuenta en la FISICA deben colgar DIRECTAMENTE de la escena. NO deben colgar de otros nodos.
 
       this.createBackground();
-
+      this.createStones();
       this.createTower();
 
       // El personaje principal
-      this.createPlayer();
+      this.player = new Jugador(this);
 
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -44,10 +44,11 @@ class Juego extends Physijs.Scene {
       var that = this;
       var origen = {x: 800.0};
       var destino = {x: 30.0};
-      Juego.ANIMACIONINICIO = new TWEEN.Tween(origen).to(destino, 4000)
+      Juego.ANIMACIONINICIO = new TWEEN.Tween(origen).to(destino, 1000)
          .easing(TWEEN.Easing.Quadratic.InOut)
          .onUpdate (function () {
             that.camera.position.set(that.player.position.x, that.player.position.y + 5, that.player.position.z - origen.x);
+            that.camera.up.set(0, 1, 0);
             var look = new THREE.Vector3(that.player.position.x, that.player.position.y, that.player.position.z); 
             that.camera.lookAt(look); 
          })
@@ -55,10 +56,6 @@ class Juego extends Physijs.Scene {
             origen.x = 0.0;
             Juego.START = true;
          });
-
-      //var constraint = new Physijs.DOFConstraint(this.player, this.playerjump, this.player.position);
-      //this.addConstraint(constraint);
-      //constraint.setLinearUpperLimit(new THREE.Vector3(10000000000, 5, 10000000000));
       
       // Un suelo 
       this.createGround();
@@ -109,6 +106,8 @@ class Juego extends Physijs.Scene {
          this.player.backward = true;
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
+      } else if (String.fromCharCode(tecla) == "E") {
+         this.player.canceljump = true;
       } else if (tecla == 32) {
          this.player.jump = true;
       }
@@ -125,6 +124,8 @@ class Juego extends Physijs.Scene {
          this.player.backward = false;
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = false;
+      } else if (String.fromCharCode(tecla) == "E") {
+         this.player.canceljump = false;
       } else if (tecla == 32) {
          this.player.jump = false;
       }
@@ -133,11 +134,38 @@ class Juego extends Physijs.Scene {
    createBackground() {
       var geometry = new THREE.SphereGeometry(200, 30, 30);
       // Como material se crea uno a partir de una textura
-      var texture = new THREE.TextureLoader().load('./imgs/night.png');
+      var texture = new THREE.TextureLoader().load('./imgs/night.jpg');
       var material = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
       this.background = new THREE.Mesh(geometry, material);
 
       this.add(this.background);
+   }
+
+   createStones() {
+      var element = null;
+      
+      for (var i = 0 ; i < 30 ; i++) {
+         // Textura aleatoria
+         if (i % 2 == 0) {
+            var texture = new THREE.TextureLoader().load('./imgs/stone1.jpg');
+         } else {
+            var texture = new THREE.TextureLoader().load('./imgs/stone2.jpg');
+         }
+
+         element = new Physijs.BoxMesh (
+            new THREE.BoxGeometry (1,1,1),
+            Physijs.createMaterial(
+               new THREE.MeshLambertMaterial({map: texture}), 
+               0.1, 0.9),
+            1.0
+         );
+
+         element.scale.set(Math.random()+0.5, Math.random()+0.5, Math.random()+0.5);
+         element.position.set(Math.floor(Math.random() * (50 - -59) ) + -50, 0, -130);
+         element.rotation.set(Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2);
+         
+         this.add (element);
+      }
    }
 
    createTower() {
@@ -152,46 +180,6 @@ class Juego extends Physijs.Scene {
 
       this.add(this.tower);
    }
-
-   createPlayer() {
-      this.player = new Physijs.BoxMesh (   // Caja física
-         new THREE.BoxGeometry (1,1,1),   // Caja de Three
-         Physijs.createMaterial (   // Material físico
-           // Las figuras se crean en modo alambre, cuando colisionen con el suelo cambiarán a color sólido
-           new THREE.MeshLambertMaterial ({color: 0xFFFFFF * Math.random(),  wireframe: false}),   // Material de Three
-           1.0, 0.0),   // Rozamiento y rebote
-         1.0   // Masa
-      );
-      this.player.scale.set(Math.random()+0.5, Math.random()+0.5, Math.random()+0.5);   // Tamaño final aleatorio
-      this.boxes.push(this.player);      
-      this.todos.push(this.player);
-
-      this.player.position.set (0, 2, -40);
-      this.player.rotateY(Math.PI / 2);
-
-      this.playerjump = new Physijs.BoxMesh (   // Caja física
-         new THREE.BoxGeometry (1,0.1,1),   // Caja de Three
-         Physijs.createMaterial (   // Material físico
-           // Las figuras se crean en modo alambre, cuando colisionen con el suelo cambiarán a color sólido
-           new THREE.MeshLambertMaterial ({wireframe: false, opacity: 0, transparent: true}),   // Material de Three
-           1.0, 0.0),   // Rozamiento y rebote
-         1.0   // Masa
-      );
-      this.playerjump.translateY(-0.1);
-
-      // A las figuras se le añaden un atributo  colisionable  para indicar que estas figuras son colisionables
-      this.player.colisionable = true;
-      // Las figuras con física deben estar DIRECTAMENTE colgadas en la escena.
-      this.add(this.player);
-      this.add(this.playerjump);
-
-      // Se construyen las restricciones
-      //var constraint = new Physijs.DOF
-
-      // Se añaden las restricciones a la escena
-
-      // Se configuran las restricciones
-   }
    
    createCamera () {      
       // Para crear una cámara le indicamos
@@ -201,6 +189,7 @@ class Juego extends Physijs.Scene {
       this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
       // También se indica dónde se coloca
       this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 800);
+      this.camera.up.set(0, 1, 0);
       // Y hacia dónde mira
       var look = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
       this.camera.lookAt(look);
@@ -241,13 +230,34 @@ class Juego extends Physijs.Scene {
       var ground = new Physijs.HeightfieldMesh(sueloGeometria, physiMaterial, 0, resolucion, resolucion);
       ground.rotation.x = -Math.PI / 2.0;
 
+      // Paredes del inicio
+      geometry = new THREE.BoxGeometry (100, 5, 50);
+      var pared1 = new Physijs.BoxMesh (geometry, physiMaterial,0);
+      var pared2 = new Physijs.BoxMesh (geometry, physiMaterial,0);
+      pared1.rotateZ(Math.PI/2);
+      pared1.translateZ(0);
+      pared1.translateX(110)
+      pared1.translateY(-20);
+      pared2.rotateZ(Math.PI/2);
+      pared2.translateZ(0);
+      pared2.translateX(110);
+      pared2.translateY(20);
+      ground.add(pared1);
+      ground.add(pared2);
+
       this.add(groundAux);
       this.add(ground);
+
+      ground.addEventListener('collision',
+         function (o,v,r,n) {
+            console.log("hola");
+            loseHeart();
+         });
    }
 
    createGameOver() {
       // Al segundo suelo se le añade un listener de colisiones para identificar un game over
-      ground.addEventListener ('collision',
+      ground.addEventListener('collision',
          function (o,v,r,n) {
             if (o.colisionable)
                o.material.wireframe = false;
@@ -313,7 +323,7 @@ class Juego extends Physijs.Scene {
    }
 
    updateCamera(){
-      this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 30); 
+      this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 20); 
       this.camera.up.set(0, 1, 0);
       var look = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z); 
       this.camera.lookAt(look); 
@@ -333,29 +343,9 @@ class Juego extends Physijs.Scene {
       if (Juego.START) {
          this.cameraControl.update();
          this.updateCamera();
-
-         if (this.player.forward) {
-            this.player.translateZ(0.1);
-            this.player.__dirtyPosition = true;
-         } else if (this.player.backward) {
-            this.player.translateZ(-0.1);
-            this.player.__dirtyPosition = true;
-         }
-
-         if (this.player.left) {
-            this.player.rotateY(0.1);
-            this.player.__dirtyRotation = true;
-         } else if (this.player.right) {
-            this.player.rotateY(-0.1);
-            this.player.__dirtyRotation = true;
-         }
-
-         if (this.player.jump) {
-            var offset = new THREE.Vector3(0, 1, 0);
-            this.player.applyCentralImpulse(offset.normalize().multiplyScalar(5));
-            this.player.__dirtyPosition;
-         }
+         this.player.update();
       }
+      this.background.rotateY(0.001);
 
       TWEEN.update();
       
@@ -371,13 +361,25 @@ class Juego extends Physijs.Scene {
 Juego.START = false;
 Juego.ANIMACIONINICIO;
 
+// Perder una vida
+function loseHeart() {
+   if (document.getElementById("heart1").src === "./imgs/heart.png") {
+      document.getElementById("heart1").src = "./imgs/emptyheart.png";
+   } else if (document.getElementById("heart2").src === "./imgs/heart.png") {
+      document.getElementById("heart2").src = "./imgs/emptyheart.png";
+   } else if (document.getElementById("heart3").src === "./imgs/heart.png") {
+      document.getElementById("heart3").src = "./imgs/emptyheart.png";
+   }
+}
+
 /// La función principal
 $(function () {
    // Se crea la escena
    var scene = new Juego("#WebGL-output");
+
+   // LISTENERS
    
    // Se inicia el juego
-   var that = this;
    document.getElementById("start").addEventListener("click", function () {
       document.getElementById("WebGL-output").style.opacity = 1.0;
       document.getElementById("start").style.display = "none";
@@ -386,7 +388,6 @@ $(function () {
       Juego.ANIMACIONINICIO.start();
    });
    
-   // listeners
    // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
    window.addEventListener ("resize", () => scene.onWindowResize());
    // Definimos un listener para el mouse down del ratón para los impulsos a las figuras
