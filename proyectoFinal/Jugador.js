@@ -13,24 +13,20 @@ class Jugador extends THREE.Object3D {
       );
       this.player.scale.set(Math.random()+0.5, Math.random()+0.5, Math.random()+0.5);   // Tamaño final aleatorio
 
-      this.player.position.set (0, 0, -130);
+      this.player.position.set (0, 2, -130);
       this.player.rotateY(Math.PI / 2);
          
       this.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
 
-      this.jumped = false;
-
+      this.player.colisionable = true;
+      
       scene.add(this.player);
-
-      // Restricción de giro
-      /*var restric = new Physijs.HingeConstraint(this.player, this.objFijo, this.objFijo.position, new THREE.Vector3(0, 1, 0));
-      scene.addConstraint(restric);
-      restric.setLimits(0, 2*Math.PI, 0, 0);
-      restric.enableAngularMotor(velocidadMaxima, aceleracion);*/
    }
 
-   update() {
+   update(copiaRotation) {
       this.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
+      this.player.rotation.copy(copiaRotation);
+      this.player.__dirtyRotation = true;
 
       if (this.forward) {
          this.player.translateZ(0.1);
@@ -62,9 +58,11 @@ class Jugador extends THREE.Object3D {
          this.player.__dirtyPosition = true;
       }
 
-      if (this.canceljump) {
-         var offset = new THREE.Vector3(0, -1, 0);
-         this.player.applyCentralImpulse(offset.normalize().multiplyScalar(5));
-      }
+      this.rotation.set(this.player.rotation.x, this.player.rotation.y, this.player.rotation.z);
+   }
+
+   translateZ(val) {
+      this.player.translateZ(val);
+      this.player.__dirtyPosition = true;
    }
 }

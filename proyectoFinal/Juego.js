@@ -34,9 +34,12 @@ class Juego extends Physijs.Scene {
       this.createStones();
       this.createTower();
 
+      this.platform = new PlataformaMovil(this);
+
       // El personaje principal
       this.player = new Jugador(this);
-
+      this.copiaRotation = this.player.rotation.clone();
+   
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
 
@@ -55,6 +58,21 @@ class Juego extends Physijs.Scene {
          .onComplete (function () {
             origen.x = 0.0;
             Juego.START = true;
+         });
+
+      // Animacion de plataformas
+      var origenP = {x: 0.0};
+      var destinoP = {x: 0.7};
+      this.platformAnimation1 = new TWEEN.Tween(origenP).to(destinoP, 8000)
+         .easing(TWEEN.Easing.Quadratic.InOut)
+         .onUpdate (function () {
+            if (that.platform.objectOnPlatform) {
+               that.platform.translateZ(origenP.x);
+               that.player.translateZ(origenP.x);
+            }
+         })
+         .onComplete (function () {
+            origen.x = 0.0;
          });
       
       // Un suelo 
@@ -107,7 +125,7 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
-         this.player.canceljump = true;
+         this.platformAnimation1.start();
       } else if (tecla == 32) {
          this.player.jump = true;
       }
@@ -124,8 +142,6 @@ class Juego extends Physijs.Scene {
          this.player.backward = false;
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = false;
-      } else if (String.fromCharCode(tecla) == "E") {
-         this.player.canceljump = false;
       } else if (tecla == 32) {
          this.player.jump = false;
       }
@@ -232,27 +248,37 @@ class Juego extends Physijs.Scene {
 
       // Paredes del inicio
       geometry = new THREE.BoxGeometry (100, 5, 50);
-      var pared1 = new Physijs.BoxMesh (geometry, physiMaterial,0);
-      var pared2 = new Physijs.BoxMesh (geometry, physiMaterial,0);
-      pared1.rotateZ(Math.PI/2);
+      var pared1 = new Physijs.BoxMesh (geometry, physiMaterial, 0);
+      var pared2 = new Physijs.BoxMesh (geometry, physiMaterial, 0);
+      pared1.rotateY(Math.PI/2);
+      pared1.rotateX(Math.PI/2);
       pared1.translateZ(0);
       pared1.translateX(110)
       pared1.translateY(-20);
-      pared2.rotateZ(Math.PI/2);
+      pared2.rotateY(Math.PI/2);
+      pared2.rotateX(Math.PI/2);
       pared2.translateZ(0);
       pared2.translateX(110);
       pared2.translateY(20);
-      ground.add(pared1);
-      ground.add(pared2);
 
+      pared1.addEventListener('collision',
+         function (o,v,r,n) {
+            if (o.colisionable) {
+               loseHeart();
+            }
+         });
+      
+      pared2.addEventListener('collision',
+         function (o,v,r,n) {
+            if (o.colisionable) {
+               loseHeart();
+            }
+         });
+
+      this.add(pared1);
+      this.add(pared2);
       this.add(groundAux);
       this.add(ground);
-
-      ground.addEventListener('collision',
-         function (o,v,r,n) {
-            console.log("hola");
-            loseHeart();
-         });
    }
 
    createGameOver() {
@@ -343,7 +369,8 @@ class Juego extends Physijs.Scene {
       if (Juego.START) {
          this.cameraControl.update();
          this.updateCamera();
-         this.player.update();
+         this.copiaRotation.copy(this.player.rotation);
+         this.player.update(this.copiaRotation);
       }
       this.background.rotateY(0.001);
 
@@ -363,12 +390,18 @@ Juego.ANIMACIONINICIO;
 
 // Perder una vida
 function loseHeart() {
-   if (document.getElementById("heart1").src === "./imgs/heart.png") {
-      document.getElementById("heart1").src = "./imgs/emptyheart.png";
-   } else if (document.getElementById("heart2").src === "./imgs/heart.png") {
-      document.getElementById("heart2").src = "./imgs/emptyheart.png";
-   } else if (document.getElementById("heart3").src === "./imgs/heart.png") {
+   if (document.getElementById("heart3").getAttribute('src') == "./imgs/heart.png") {
       document.getElementById("heart3").src = "./imgs/emptyheart.png";
+   } else if (document.getElementById("heart2").getAttribute('src') == "./imgs/heart.png") {
+      document.getElementById("heart2").src = "./imgs/emptyheart.png";
+   } else if (document.getElementById("heart1").getAttribute('src') == "./imgs/heart.png") {
+      document.getElementById("heart1").src = "./imgs/emptyheart.png";
+      
+      // Game over
+      Juego.START = false;
+      document.getElementById("reboot").style.display = "block";
+      document.getElementById("reboot").innerHTML = "<h1>GAME OVER ¿Reiniciar?</h1>";
+      document.getElementById("WebGL-output").style.opacity = 0.5;
    }
 }
 
@@ -383,9 +416,14 @@ $(function () {
    document.getElementById("start").addEventListener("click", function () {
       document.getElementById("WebGL-output").style.opacity = 1.0;
       document.getElementById("start").style.display = "none";
+      document.getElementById("reboot").style.display = "none";
 
       // Animación TWEEN del inicio
       Juego.ANIMACIONINICIO.start();
+   });
+
+   document.getElementById("reboot").addEventListener("click", function() {
+      location.reload();
    });
    
    // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
