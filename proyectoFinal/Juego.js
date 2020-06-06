@@ -34,7 +34,7 @@ class Juego extends Physijs.Scene {
       this.createStones();
       this.createTower();
 
-      this.platform = new PlataformaMovil(this);
+      this.startPlatform = new PlataformaMovil(this);
 
       // El personaje principal
       this.player = new Jugador(this);
@@ -42,6 +42,8 @@ class Juego extends Physijs.Scene {
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
+
+      this.createAudio();
 
       // Animación del inicio del juego
       var that = this;
@@ -63,11 +65,11 @@ class Juego extends Physijs.Scene {
       // Animacion de plataformas
       var origenP = {x: 0.0};
       var destinoP = {x: 0.7};
-      this.platformAnimation1 = new TWEEN.Tween(origenP).to(destinoP, 8000)
-         .easing(TWEEN.Easing.Quadratic.InOut)
+      this.startPlatformAnimation = new TWEEN.Tween(origenP).to(destinoP, 8000)
+         .easing(TWEEN.Easing.Cubic.InOut)
          .onUpdate (function () {
-            if (that.platform.objectOnPlatform) {
-               that.platform.translateZ(origenP.x);
+            if (that.startPlatform.objectOnPlatform) {
+               that.startPlatform.translateZ(origenP.x);
                that.player.translateZ(origenP.x);
             }
          })
@@ -125,7 +127,7 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
-         this.platformAnimation1.start();
+         this.startPlatformAnimation.start();
       } else if (tecla == 32) {
          this.player.jump = true;
       }
@@ -185,7 +187,7 @@ class Juego extends Physijs.Scene {
    }
 
    createTower() {
-      var geometry = new THREE.CylinderGeometry(20, 10, 100);
+      var geometry = new THREE.CylinderGeometry(20, 20, 100);
       var texture = new THREE.TextureLoader().load('./imgs/tower.jpg');
       var material = new THREE.MeshPhongMaterial({map: texture});
       var physiMaterial = Physijs.createMaterial(material, 1.0, 0.0);
@@ -195,6 +197,51 @@ class Juego extends Physijs.Scene {
       this.tower.translateY(50);
 
       this.add(this.tower);
+   }
+
+   createAudio() {
+      var x = document.getElementById("myAudio"); 
+      x.play();
+
+      /*// instantiate a listener
+      var audioListener = new THREE.AudioListener();
+
+      // add the listener to the camera
+      this.camera.add(audioListener);
+
+      // instantiate audio object
+      var towerMusic = new THREE.Audio(audioListener);
+
+      // add the audio object to the scene
+      this.add(towerMusic);
+
+      // instantiate a loader
+      var loader = new THREE.AudioLoader();
+
+      // load a resource
+      loader.load(
+         // resource URL
+         'audio/tower.mp3',
+
+         // onLoad callback
+         function (audioBuffer) {
+            // set the audio object buffer to the loaded object
+            towerMusic.setBuffer(audioBuffer);
+
+            // play the audio
+            towerMusic.play();
+         },
+
+         // onProgress callback
+         function (xhr) {
+            //console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+         },
+
+         // onError callback
+         function (err) {
+            console.log('Error en la reproducción de la música');
+         }
+      );*/
    }
    
    createCamera () {      
@@ -260,6 +307,14 @@ class Juego extends Physijs.Scene {
       pared2.translateZ(0);
       pared2.translateX(110);
       pared2.translateY(20);
+
+      var that = this;
+      ground.addEventListener('collision',
+         function (o,v,r,n) {
+            if (o.colisionable) {
+               that.startPlatform.objectOnPlatform = false;
+            }
+         });
 
       pared1.addEventListener('collision',
          function (o,v,r,n) {
@@ -437,4 +492,3 @@ $(function () {
    // Finalmente, realizamos el primer renderizado.
    scene.update();
 });
-
