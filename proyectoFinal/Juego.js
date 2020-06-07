@@ -119,9 +119,7 @@ class Juego extends Physijs.Scene {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
          this.startPlatform.startAnimation();
-      } else if (tecla == 32) {
-         this.player.jump = true;
-      }
+      } 
    }
 
    onKeyUp(event) {
@@ -135,8 +133,14 @@ class Juego extends Physijs.Scene {
          this.player.backward = false;
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = false;
-      } else if (tecla == 32) {
-         this.player.jump = false;
+      }
+   }
+
+   onKeyPress(event) {
+      var tecla = event.which || event.keyCode;
+
+      if (tecla == 32) {
+         this.player.jump = true;
       }
    }
 
@@ -304,6 +308,7 @@ class Juego extends Physijs.Scene {
          function (o,v,r,n) {
             if (o.colisionable) {
                that.startPlatform.objectOnPlatform = false;
+               that.player.jump = false;
                that.player.jumping = true;
             }
          });
@@ -474,12 +479,13 @@ $(function () {
    });
    
    // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
-   window.addEventListener ("resize", () => scene.onWindowResize());
+   window.addEventListener("resize", () => scene.onWindowResize());
    // Definimos un listener para el mouse down del ratón para los impulsos a las figuras
-   window.addEventListener ("mousedown", () => scene.onMouseDown(event), true);
+   window.addEventListener("mousedown", () => scene.onMouseDown(event), true);
    // Listeners para el movimiento del personaje
-   window.addEventListener ("keydown", (event) => scene.onKeyDown(event), true);
-   window.addEventListener ("keyup", () => scene.onKeyUp(event));
+   window.addEventListener("keydown", (event) => scene.onKeyDown(event), true);
+   window.addEventListener("keyup", (event) => scene.onKeyUp(event));
+   window.addEventListener("keypress", (event) => scene.onKeyPress(event));
    
    // Finalmente, realizamos el primer renderizado.
    scene.update();

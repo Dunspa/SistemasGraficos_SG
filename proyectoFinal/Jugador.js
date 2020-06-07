@@ -19,6 +19,7 @@ class Jugador extends ObjetoFisico {
       this.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
 
       this.object.colisionable = true;
+      this.jump = false;
 
       /*var that = this;
       var materialLoader = new THREE.MTLLoader();
@@ -71,10 +72,12 @@ class Jugador extends ObjetoFisico {
          }*/
 
          if (this.jumping) {
-            this.object.translateY(0.1);
+            for (var i = 0 ; i < 20 ; i++) {
+               this.object.translateY(0.01);
+            }
             this.object.__dirtyPosition = true;
 
-            if (this.object.position.y >= 3) {
+            if (this.object.position.y >= 5) {
                this.jumping = false;
             }
          }
