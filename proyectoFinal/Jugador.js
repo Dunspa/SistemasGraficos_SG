@@ -1,9 +1,9 @@
 // Jose Luis Gallego Peña
-class Jugador extends THREE.Object3D {
-   constructor(scene) {
+class Jugador extends ObjetoFisico {
+   constructor() {
       super();
 
-      this.player = new Physijs.BoxMesh (   // Caja física
+      this.object = new Physijs.BoxMesh (   // Caja física
          new THREE.BoxGeometry (1,1,1),   // Caja de Three
          Physijs.createMaterial (   // Material físico
            // Las figuras se crean en modo alambre, cuando colisionen con el suelo cambiarán a color sólido
@@ -11,58 +11,80 @@ class Jugador extends THREE.Object3D {
            1.0, 0.0),   // Rozamiento y rebote
          25.0   // Masa
       );
-      this.player.scale.set(Math.random()+0.5, Math.random()+0.5, Math.random()+0.5);   // Tamaño final aleatorio
+      this.object.scale.set(Math.random()+0.5, Math.random()+0.5, Math.random()+0.5);   // Tamaño final aleatorio
 
-      this.player.position.set (0, 2, -130);
-      this.player.rotateY(Math.PI / 2);
+      this.object.position.set (0, 2, -130);
+      this.object.rotateY(Math.PI / 2);
          
-      this.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
+      this.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
 
-      this.player.colisionable = true;
-      
-      scene.add(this.player);
+      this.object.colisionable = true;
+
+      /*var that = this;
+      var materialLoader = new THREE.MTLLoader();
+      var objectLoader = new THREE.OBJLoader();
+      materialLoader.load('./models/jackfrost.mtl',
+         function(materials) {
+            objectLoader.setMaterials(materials);
+            objectLoader.load('./models/jackfrost.obj',
+               function(object) {
+                  that.object = object;
+                  //modelo.rotateX(-Math.PI/2);
+                  //modelo.scale.set(0.3, 0.3, 0.3);
+                  //modelo.translateZ(-5);
+                  scene.add(modelo);
+               }, null, null);
+         });*/
    }
 
    update(copiaRotation) {
-      this.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
-      this.player.rotation.copy(copiaRotation);
-      this.player.__dirtyRotation = true;
+      this.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
+      this.object.rotation.copy(copiaRotation);
+      this.object.__dirtyRotation = true;
 
       if (this.forward) {
-         this.player.translateZ(0.1);
-         this.player.__dirtyPosition = true;
+         this.object.translateZ(0.1);
+         this.object.__dirtyPosition = true;
       } else if (this.backward) {
-         this.player.translateZ(-0.1);
-         this.player.__dirtyPosition = true;
+         this.object.translateZ(-0.1);
+         this.object.__dirtyPosition = true;
       }
 
       if (this.left) {
-         this.player.rotateY(0.1);
-         this.player.__dirtyRotation = true;
+         this.object.rotateY(0.1);
+         this.object.__dirtyRotation = true;
       } else if (this.right) {
-         this.player.rotateY(-0.1);
-         this.player.__dirtyRotation = true;
+         this.object.rotateY(-0.1);
+         this.object.__dirtyRotation = true;
       }
 
       if (this.jump) {
-         //if (this.position.y === 0) {
-            //this.jumped = false;
-         //}
-         /*var offset = new THREE.Vector3(0, 1, 1);
-         this.player.applyCentralImpulse(offset.normalize().multiplyScalar(3));
-         //if (this.position.y <= 3.0 && !this.jumped) {
-            
-         //}
-         this.player.__dirtyPosition = true;*/
-         this.player.translateY(0.15);
-         this.player.__dirtyPosition = true;
+         /*if (!this.jumping) {
+            var offset = new THREE.Vector3(0, 1, 0);
+            this.object.applyCentralImpulse(offset.normalize().multiplyScalar(300));
+            this.object.__dirtyPosition = true;
+            this.jumping = true;
+         } else {
+            var offset = new THREE.Vector3(0, -1, 0);
+            this.object.applyCentralImpulse(offset.normalize().multiplyScalar(10));
+            this.object.__dirtyPosition = true;
+         }*/
+
+         if (this.jumping) {
+            this.object.translateY(0.1);
+            this.object.__dirtyPosition = true;
+
+            if (this.object.position.y >= 3) {
+               this.jumping = false;
+            }
+         }
       }
 
-      this.rotation.set(this.player.rotation.x, this.player.rotation.y, this.player.rotation.z);
+      this.rotation.set(this.object.rotation.x, this.object.rotation.y, this.object.rotation.z);
    }
 
    translateZ(val) {
-      this.player.translateZ(val);
-      this.player.__dirtyPosition = true;
+      this.object.translateZ(val);
+      this.object.__dirtyPosition = true;
    }
 }

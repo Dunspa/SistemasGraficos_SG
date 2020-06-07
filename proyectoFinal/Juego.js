@@ -34,11 +34,17 @@ class Juego extends Physijs.Scene {
       this.createStones();
       this.createTower();
 
-      this.startPlatform = new PlataformaMovil(this);
+      this.cartel = new CartelInformativo();
+      this.cartel.posicion(0, 3, -120);
+      this.cartel.addToScene(this);
 
       // El personaje principal
-      this.player = new Jugador(this);
+      this.player = new Jugador();
       this.copiaRotation = this.player.rotation.clone();
+      this.player.addToScene(this);
+
+      this.startPlatform = new PlataformaMovil(this.player, './imgs/stone2.jpg', 'Z', {x: 0.0}, {x: 0.7}, 8000);
+      this.startPlatform.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -60,21 +66,6 @@ class Juego extends Physijs.Scene {
          .onComplete (function () {
             origen.x = 0.0;
             Juego.START = true;
-         });
-
-      // Animacion de plataformas
-      var origenP = {x: 0.0};
-      var destinoP = {x: 0.7};
-      this.startPlatformAnimation = new TWEEN.Tween(origenP).to(destinoP, 8000)
-         .easing(TWEEN.Easing.Cubic.InOut)
-         .onUpdate (function () {
-            if (that.startPlatform.objectOnPlatform) {
-               that.startPlatform.translateZ(origenP.x);
-               that.player.translateZ(origenP.x);
-            }
-         })
-         .onComplete (function () {
-            origen.x = 0.0;
          });
       
       // Un suelo 
@@ -127,7 +118,7 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
-         this.startPlatformAnimation.start();
+         this.startPlatform.startAnimation();
       } else if (tecla == 32) {
          this.player.jump = true;
       }
@@ -313,6 +304,7 @@ class Juego extends Physijs.Scene {
          function (o,v,r,n) {
             if (o.colisionable) {
                that.startPlatform.objectOnPlatform = false;
+               that.player.jumping = true;
             }
          });
 
@@ -423,11 +415,11 @@ class Juego extends Physijs.Scene {
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
-         this.updateCamera();
+         //this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
          this.player.update(this.copiaRotation);
       }
-      this.background.rotateY(0.001);
+      this.background.rotateY(0.0005);
 
       TWEEN.update();
       
