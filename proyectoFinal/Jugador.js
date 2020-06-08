@@ -105,6 +105,18 @@ class Jugador extends ObjetoFisico {
                   this.jumping = false;
                }
             }
+         } else {
+            var bajar = true;
+            for (var i = 0 ; i < 20 && bajar ; i++) {
+               console.log("jola");
+               this.object.translateY(-0.01);
+               this.object.__dirtyPosition = true;
+               this.height -= 0.01;
+
+               if (this.height = 0) {
+                  bajar = false;
+               }
+            }
          }
       } else {
          this.height = 0;

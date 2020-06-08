@@ -35,7 +35,7 @@ class Juego extends Physijs.Scene {
       // IMPORTANTE: Los elementos que se desee sean tenidos en cuenta en la FISICA deben colgar DIRECTAMENTE de la escena. NO deben colgar de otros nodos.
 
       this.createBackground();
-      this.createStones();
+      //this.createStones();
       this.createTower();
 
       this.cartel = new CartelInformativo();
@@ -51,7 +51,7 @@ class Juego extends Physijs.Scene {
       this.startPlatform.addToScene(this);
 
       this.platform1 = new Plataforma(this.player, './imgs/stone2.jpg');
-      this.platform1.posicion(0, 2, -120);
+      this.platform1.posicion(0, 2, -115);
       this.platform1.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
@@ -106,9 +106,9 @@ class Juego extends Physijs.Scene {
    onMouseDown(event) {
       if (event.ctrlKey) {
          // Para hacer órbita hay que mantener pulsado Ctrl
-         this.cameraControl.enabled = true;
+         //this.cameraControl.enabled = true;
       } else {
-         this.cameraControl.enabled = false;
+         //this.cameraControl.enabled = false;
          // Se usa el clic para impulsar cajas y esferas
          this.pushBox (event);
       }
@@ -300,7 +300,7 @@ class Juego extends Physijs.Scene {
       // Suelo auxiliar para que no haya errores y el objeto se pueda caer entre los bultos
       var geometry = new THREE.BoxGeometry(tamaX, 10, tamaY);
       var groundAux = new Physijs.BoxMesh(geometry, physiMaterial, 0);
-      groundAux.translateY(-5.01);
+      groundAux.translateY(-5.03);
 
       // Suelo escarpado
       for (var i = 0 ; i < sueloGeometria.vertices.length ; i++) {
@@ -443,7 +443,7 @@ class Juego extends Physijs.Scene {
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
-         this.updateCamera();
+         //this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
          this.player.update(this.copiaRotation);
       }
