@@ -23,7 +23,8 @@ class Jugador extends ObjetoFisico {
             objectLoader.setMaterials(materials);
             objectLoader.load('./models/jackfrost.obj',
                function(obj) {
-                  var modelo = obj;
+                  that.m = obj;
+                  modelo = obj;
                   modelo.translateY(-1.5);
                   modelo.translateZ(-0.2);
 
@@ -31,21 +32,21 @@ class Jugador extends ObjetoFisico {
                   var bounding = new THREE.BoxHelper(modelo);
                   bounding.geometry.computeBoundingBox();
                   var bb = bounding.geometry.boundingBox;
-                  var geometriaCollider = new THREE.BoxGeometry(bb.max.x-bb.min.x, bb.max.y-bb.min.y, bb.max.z-bb.min.z);
+                  geometriaCollider = new THREE.BoxGeometry(bb.max.x-bb.min.x, bb.max.y-bb.min.y, bb.max.z-bb.min.z);
 
                   // Collider
-                  var matInvisible = new THREE.MeshBasicMaterial({transparent: true, opacity: 0.5});
-                  var matFisico = Physijs.createMaterial(matInvisible, 1.0, 0.0);
+                  var matInvisible = new THREE.MeshBasicMaterial({transparent: true, opacity: 0});
+                  matFisico = Physijs.createMaterial(matInvisible, 1.0, 0.0);
                   that.object = new Physijs.BoxMesh(geometriaCollider, matFisico, 25.0);
 
                   that.object.add(modelo);
 
-                  that.copiaScale = that.object.scale.clone(); // Guardar tamaño base
-
                   that.object.position.set (0, 2, -130);
+                  
                   that.object.rotateY(Math.PI / 2);
          
                   that.position.set(that.object.position.x, that.object.position.y, that.object.position.z);
+                  that.scale.set(that.object.scale.x, that.object.scale.y, that.object.scale.z);
 
                   that.object.colisionable = true;
 
@@ -57,16 +58,16 @@ class Jugador extends ObjetoFisico {
       this.maxi = true;
    }
 
-   update(copiaRotation) {
+   update(copiaRotation, scene) {
       this.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
       this.object.rotation.copy(copiaRotation);
       this.object.__dirtyRotation = true;
 
       if (this.forward) {
-         this.object.translateZ(0.1);
+         this.object.translateZ(0.2);
          this.object.__dirtyPosition = true;
       } else if (this.backward) {
-         this.object.translateZ(-0.1);
+         this.object.translateZ(-0.2);
          this.object.__dirtyPosition = true;
       }
 
@@ -97,9 +98,10 @@ class Jugador extends ObjetoFisico {
 
          if (this.jumping) {
             for (var i = 0 ; i < 20 && this.jumping ; i++) {
-               this.object.translateY(0.01);
+               this.object.translateY(0.015);
+               this.object.translateZ(0.01);
                this.object.__dirtyPosition = true;
-               this.height += 0.01;
+               this.height += 0.015;
 
                if (this.height >= 4) {
                   this.jumping = false;
@@ -108,10 +110,10 @@ class Jugador extends ObjetoFisico {
          } else {
             var bajar = true;
             for (var i = 0 ; i < 20 && bajar ; i++) {
-               console.log("jola");
-               this.object.translateY(-0.01);
+               this.object.translateY(-0.02);
+               this.object.translateZ(0.01);
                this.object.__dirtyPosition = true;
-               this.height -= 0.01;
+               this.height -= 0.02;
 
                if (this.height = 0) {
                   bajar = false;
@@ -123,17 +125,45 @@ class Jugador extends ObjetoFisico {
       }
 
       this.rotation.set(this.object.rotation.x, this.object.rotation.y, this.object.rotation.z);
+
+      // Poder escalar un objeto en Physijs, que no lo permite, creando un nuevo objeto
+      if (this.changesize) {
+         if (this.maxi) {
+            this.maxim(scene);
+         } else {
+            this.mini(scene);
+         }
+      }
+
+      this.changesize = false;
    }
 
-   maxim() {
+   maxim(scene) {
       this.maxi = true;
-      this.object.scale.copy(this.copiaScale);
+      scene.remove(this.object);
+
+      this.object = new Physijs.BoxMesh(geometriaCollider, matFisico, 25.0);
+      this.object.scale.copy(this.scale);
+      this.object.position.copy(this.position);
+      this.object.add(this.m);
+      this.object.colisionable = true;
+      scene.add(this.object);
    }
 
-   mini() {
+   mini(scene) {
       this.maxi = false;
-      this.object.scale.set(this.copiaScale.x/4, this.copiaScale.y/4, this.copiaScale.z/4);
-      this.object.translateY(-1);
-      this.object.__dirtyPosition = true;
+      scene.remove(this.object);
+
+      this.object = new Physijs.BoxMesh(geometriaCollider, matFisico, 25.0);
+      this.object.scale.copy(this.scale);
+      this.object.scale.set(1, this.object.scale.y/4, 1);
+      this.object.position.copy(this.position);
+      this.object.add(this.m);
+      this.object.colisionable = true;
+      scene.add(this.object);
    }
 }
+
+var modelo;
+var geometriaCollider;
+var matFisico;

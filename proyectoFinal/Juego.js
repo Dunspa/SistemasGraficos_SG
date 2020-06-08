@@ -142,10 +142,11 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = false;
       } else if (String.fromCharCode(tecla) == "Q") {
+         this.player.changesize = true;
          if (this.player.maxi) {
-            this.player.mini()
+            this.player.maxi = false;
          } else {
-            this.player.maxim();
+            this.player.maxi = true;
          }
       }
    }
@@ -289,7 +290,7 @@ class Juego extends Physijs.Scene {
    createGround() {
       var tamaX = 100;
       var tamaY = 300;
-      var resolucion = 1;
+      var resolucion = 10;
       
       var sueloGeometria = new THREE.PlaneGeometry(tamaX, tamaY, resolucion, resolucion);
       // Como material se crea uno a partir de una textura
@@ -300,7 +301,7 @@ class Juego extends Physijs.Scene {
       // Suelo auxiliar para que no haya errores y el objeto se pueda caer entre los bultos
       var geometry = new THREE.BoxGeometry(tamaX, 10, tamaY);
       var groundAux = new Physijs.BoxMesh(geometry, physiMaterial, 0);
-      groundAux.translateY(-5.03);
+      groundAux.translateY(-5.1);
 
       // Suelo escarpado
       for (var i = 0 ; i < sueloGeometria.vertices.length ; i++) {
@@ -445,7 +446,7 @@ class Juego extends Physijs.Scene {
          this.cameraControl.update();
          //this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
-         this.player.update(this.copiaRotation);
+         this.player.update(this.copiaRotation, this);
       }
       this.background.rotateY(0.0005);
 

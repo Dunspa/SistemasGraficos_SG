@@ -11,17 +11,21 @@ class ObjetoFisico extends THREE.Object3D {
 
    translateX(val) {
       this.object.translateX(val);
+      this.object.__dirtyPosition = true;
    }
 
    translateY(val) {
       this.object.translateY(val);
+      this.object.__dirtyPosition = true;
    }
 
    translateZ(val) {
       this.object.translateZ(val);
+      this.object.__dirtyPosition = true;
    }
 
    posicion(x, y, z) {
       this.object.position.set(x, y, z);
+      this.object.__dirtyPosition = true;
    }
 }
