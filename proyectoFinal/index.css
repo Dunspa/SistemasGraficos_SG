@@ -1,0 +1,12 @@
+a:active {
+   color: grey;
+}
+
+a {
+   display: block;
+}
+
+button {
+   background: none;
+   border: none;
+}

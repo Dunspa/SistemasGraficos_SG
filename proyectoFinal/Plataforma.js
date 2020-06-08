@@ -1,7 +1,9 @@
 // Jose Luis Gallego Peña
 class Plataforma extends ObjetoFisico {
-   constructor(textu) {
+   constructor(player, textu) {
       super();
+
+      this.objectOnPlatform = false;
 
       // Plataforma que recorrerá el camino
       var texture = new THREE.TextureLoader().load(textu);
@@ -12,6 +14,15 @@ class Plataforma extends ObjetoFisico {
             1, 0),
          0
       );
-      this.object.position.set(0, 2, -110);
+
+      var that = this;
+      this.object.addEventListener('collision',
+         function (o,v,r,n) {
+            if (o.colisionable) {
+               that.objectOnPlatform = true;
+               player.jump = false;
+               player.jumping = true;
+            }
+         });
    }
 }

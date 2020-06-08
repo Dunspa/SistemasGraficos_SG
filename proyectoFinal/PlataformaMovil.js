@@ -3,19 +3,7 @@
 // desde origen a destino, en cierto tiempo
 class PlataformaMovil extends Plataforma {
    constructor(player, textu, dir, origen, destino, tiempo) {
-      super(textu);
-
-      this.object.position.set(0, 2, -110);
-      
-      this.objectOnPlatform = false;
-      
-      var that = this;
-      this.object.addEventListener('collision',
-         function (o,v,r,n) {
-            if (o.colisionable) {
-               that.objectOnPlatform = true;
-            }
-         });
+      super(player, textu);
 
       // Animacion de la plataforma
       var that = this;

@@ -7,22 +7,29 @@ class CartelInformativo extends ObjetoFisico {
       // Cartel
 
       // Crear texto
-      /*var bitmap = document.createElement('canvas');
-      var g = bitmap.getContext('2d');
-      bitmap.width = 100;
-      bitmap.height = 100;
-      g.font = 'Bold 20px Arial';
-      var text = "hola";
-      g.fillStyle = 'white';
-      g.fillText(text, 0, 20);
-      g.strokeStyle = 'black';
-      g.strokeText(text, 0, 20);
+      /*var dynamicTexture = new THREEx.DynamicTexture(512,512)
+	   dynamicTexture.context.font = "bolder 90px Verdana";
+	   dynamicTexture.texture.anisotropy = renderer.getMaxAnisotropy()
+	   updateFcts.push(function(delta, now){
+         // build the text which contains the time
+         var present	= new Date()
+         var text	= pad(present.getHours(), 2, '0')
+            + ':' + pad(present.getMinutes(), 2, '0')
+            + ':' + pad(present.getSeconds(), 2, '0')
+         function pad(n, width, z) {
+            z = z || '0';
+            n = n + '';
+            return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+         }
 
-      // canvas contents will be used for a texture
-      var texture = new THREE.Texture(bitmap) */
+         // update the text
+         dynamicTexture.clear('cyan')
+            .drawText(text, undefined, 256, 'red')
+	   });*/
+
       var texture = new THREE.TextureLoader().load('./imgs/ladrillo-bump.png');
       this.object = new Physijs.BoxMesh (
-         new THREE.BoxGeometry (5,0.2,5),
+         new THREE.BoxGeometry (3,3,0.5),
          Physijs.createMaterial(
             new THREE.MeshLambertMaterial({map: texture}), 
             1, 0),

@@ -8,12 +8,16 @@ class Juego extends Physijs.Scene {
       
       // Las dos líneas anteriores DEBEN ejecutarse antes de inicializar Physijs.Scene. En este caso, antes de llamar a super
       super();
+
+      /*this.stats = new Stats();
+      this.stats.showPanel(0);
+      document.body.appendChild(stats.dom);*/
       
       // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
       this.createRenderer(myCanvas);
       
       // Se establece el valor de la gravedad, negativo, los objetos caen hacia abajo
-      this.setGravity (new THREE.Vector3 (0, -10, 0));
+      this.setGravity (new THREE.Vector3 (0, -20, 0));
       
       // Para almacenar las figuras que caen
       this.boxes = [];
@@ -35,16 +39,20 @@ class Juego extends Physijs.Scene {
       this.createTower();
 
       this.cartel = new CartelInformativo();
-      this.cartel.posicion(0, 3, -120);
+      this.cartel.posicion(-5, 3, -120);
       this.cartel.addToScene(this);
 
       // El personaje principal
-      this.player = new Jugador();
+      this.player = new Jugador(this);
       this.copiaRotation = this.player.rotation.clone();
-      this.player.addToScene(this);
 
       this.startPlatform = new PlataformaMovil(this.player, './imgs/stone2.jpg', 'Z', {x: 0.0}, {x: 0.7}, 8000);
+      this.startPlatform.posicion(0, 4, -110);
       this.startPlatform.addToScene(this);
+
+      this.platform1 = new Plataforma(this.player, './imgs/stone2.jpg');
+      this.platform1.posicion(0, 2, -120);
+      this.platform1.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -98,9 +106,9 @@ class Juego extends Physijs.Scene {
    onMouseDown(event) {
       if (event.ctrlKey) {
          // Para hacer órbita hay que mantener pulsado Ctrl
-         //this.cameraControl.enabled = true;
+         this.cameraControl.enabled = true;
       } else {
-         //this.cameraControl.enabled = false;
+         this.cameraControl.enabled = false;
          // Se usa el clic para impulsar cajas y esferas
          this.pushBox (event);
       }
@@ -119,7 +127,7 @@ class Juego extends Physijs.Scene {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
          this.startPlatform.startAnimation();
-      } 
+      }
    }
 
    onKeyUp(event) {
@@ -133,6 +141,12 @@ class Juego extends Physijs.Scene {
          this.player.backward = false;
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = false;
+      } else if (String.fromCharCode(tecla) == "Q") {
+         if (this.player.maxi) {
+            this.player.mini()
+         } else {
+            this.player.maxim();
+         }
       }
    }
 
@@ -141,13 +155,13 @@ class Juego extends Physijs.Scene {
 
       if (tecla == 32) {
          this.player.jump = true;
-      }
+      } 
    }
 
    createBackground() {
       var geometry = new THREE.SphereGeometry(200, 30, 30);
       // Como material se crea uno a partir de una textura
-      var texture = new THREE.TextureLoader().load('./imgs/night.jpg');
+      var texture = new THREE.TextureLoader().load('./imgs/fondo.jpg');
       var material = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
       this.background = new THREE.Mesh(geometry, material);
 
@@ -157,7 +171,7 @@ class Juego extends Physijs.Scene {
    createStones() {
       var element = null;
       
-      for (var i = 0 ; i < 30 ; i++) {
+      for (var i = 0 ; i < 10 ; i++) {
          // Textura aleatoria
          if (i % 2 == 0) {
             var texture = new THREE.TextureLoader().load('./imgs/stone1.jpg');
@@ -169,13 +183,22 @@ class Juego extends Physijs.Scene {
             new THREE.BoxGeometry (1,1,1),
             Physijs.createMaterial(
                new THREE.MeshLambertMaterial({map: texture}), 
-               0.1, 0.9),
-            1.0
+               1, 0),
+            20.0
          );
 
-         element.scale.set(Math.random()+0.5, Math.random()+0.5, Math.random()+0.5);
+         element.scale.set(Math.random()+1, Math.random()+2, Math.random()+1);
          element.position.set(Math.floor(Math.random() * (50 - -59) ) + -50, 0, -130);
          element.rotation.set(Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2);
+
+         element.addEventListener('collision',
+         function (o,v,r,n) {
+            if (o.colisionable) {
+               that.startPlatform.objectOnPlatform = false;
+               that.player.jump = false;
+               that.player.jumping = true;
+            }
+         });
          
          this.add (element);
       }
@@ -264,9 +287,9 @@ class Juego extends Physijs.Scene {
    }
    
    createGround() {
-      var tamaX = 300;
+      var tamaX = 100;
       var tamaY = 300;
-      var resolucion = 50;
+      var resolucion = 1;
       
       var sueloGeometria = new THREE.PlaneGeometry(tamaX, tamaY, resolucion, resolucion);
       // Como material se crea uno a partir de una textura
@@ -348,7 +371,7 @@ class Juego extends Physijs.Scene {
       // La luz ambiental solo tiene un color y una intensidad
       // Se declara como   var   y va a ser una variable local a este método
       //    se hace así puesto que no va a ser accedida desde otros métodos
-      var ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
+      var ambientLight = new THREE.AmbientLight(0xccddee, 0.50);
       // La añadimos a la escena
       this.add (ambientLight);
       
@@ -420,7 +443,7 @@ class Juego extends Physijs.Scene {
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
-         //this.updateCamera();
+         this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
          this.player.update(this.copiaRotation);
       }
@@ -430,9 +453,16 @@ class Juego extends Physijs.Scene {
       
       // Se le pide al motor de física que actualice las figuras según sus leyes
       this.simulate ();
-      
+
       // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
       this.renderer.render(this, this.getCamera());
+      
+      /*var that = this;
+      onRenderFcts.push(function() {
+         // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
+         that.renderer.render(this, this.getCamera());
+         that.stats.update();
+      })*/
    }
 }
 
