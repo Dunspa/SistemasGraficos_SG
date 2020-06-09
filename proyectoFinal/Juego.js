@@ -131,6 +131,11 @@ class Juego extends Physijs.Scene {
          if (this.startPlatform.objectOnPlatform) {
             this.startPlatform.startAnimation();
          }
+         
+         if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
+            this.remove(this.key);
+            addKey();
+         }
       }
    }
 
@@ -462,6 +467,16 @@ function loseHeart() {
       document.getElementById("reboot").innerHTML = "<h1>GAME OVER ¿Reiniciar?</h1>";
       document.getElementById("WebGL-output").style.opacity = 0.5;
    }
+}
+
+// Añadir una llave
+function addKey() {
+   document.getElementById("key").src = "./imgs/key.png";
+}
+
+// Eliminar una llave al usarla
+function removeKey() {
+   document.getElementById("key").src = "./imgs/nokey.png";
 }
 
 /// La función principal
