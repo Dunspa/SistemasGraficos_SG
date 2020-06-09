@@ -8,10 +8,6 @@ class Juego extends Physijs.Scene {
       
       // Las dos líneas anteriores DEBEN ejecutarse antes de inicializar Physijs.Scene. En este caso, antes de llamar a super
       super();
-
-      /*this.stats = new Stats();
-      this.stats.showPanel(0);
-      document.body.appendChild(stats.dom);*/
       
       // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
       this.createRenderer(myCanvas);
@@ -19,30 +15,20 @@ class Juego extends Physijs.Scene {
       // Se establece el valor de la gravedad, negativo, los objetos caen hacia abajo
       this.setGravity (new THREE.Vector3 (0, -20, 0));
       
-      // Para almacenar las figuras que caen
-      this.boxes = [];
-      this.spheres = [];
-      this.todos = [];
-      
-      // Raycaster que se usará para elegir (pick) las figuras que se empujarán
-      this.raycaster = new THREE.Raycaster();
-      
-      // Construimos los distinos elementos que tendremos en la escena
-      
       // Se crean y añaden luces a la escena
       this.createLights();
       
-      // IMPORTANTE: Los elementos que se desee sean tenidos en cuenta en la FISICA deben colgar DIRECTAMENTE de la escena. NO deben colgar de otros nodos.
+      // Construimos los distinos elementos que tendremos en la escena
 
       this.createBackground();
-      //this.createStones();
+      this.createStones();
       this.createTower();
 
       // Tutoriales del inicio
-      this.tutorial1 = new CartelInformativo("Usa las teclas WASD \npara moverte");
+      this.tutorial1 = new CartelInformativo("Usa las teclas WASD para moverte\n Puedes empujar rocas moviendote\n hacia ellas");
       this.tutorial1.position.set(-5, 3, -140);
       this.add(this.tutorial1);
-      this.tutorial2 = new CartelInformativo("Pulsa la barra\n espaciadora para saltar");
+      this.tutorial2 = new CartelInformativo("Pulsa la barra espaciadora para saltar\n Pulsa Q para agacharte");
       this.tutorial2.position.set(-5, 4, -120);
       this.add(this.tutorial2);
       this.tutorial3 = new CartelInformativo("Pulsa la tecla E al estar \nencima de una plataforma como\n esta para activarla");
@@ -60,13 +46,43 @@ class Juego extends Physijs.Scene {
       this.player = new Jugador(this);
       this.copiaRotation = this.player.rotation.clone();
 
-      this.startPlatform = new PlataformaMovil(this.player, './imgs/stone2.jpg', 'Z', {x: 0.0}, {x: 0.7}, 8000);
+      // Plataformas móviles
+      this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.85}, 8000);
       this.startPlatform.posicion(0, 4, -110);
       this.startPlatform.addToScene(this);
 
+      // Plataformas fijas
       this.platform1 = new Plataforma(this.player, './imgs/stone2.jpg');
       this.platform1.posicion(0, 2, -115);
       this.platform1.addToScene(this);
+
+      this.platform2 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform2.posicion(0, 4, 50);
+      this.platform2.addToScene(this);
+
+      this.platformaux = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platformaux.posicion(5, 2, 50);
+      this.platformaux.addToScene(this);
+
+      this.platform3 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform3.posicion(0, 4, 60);
+      this.platform3.addToScene(this);
+
+      this.platform4 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform4.posicion(0, 4, 70);
+      this.platform4.addToScene(this);
+
+      this.platform5 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform5.posicion(-7, 7, 77);
+      this.platform5.addToScene(this);
+
+      this.platform6 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform6.posicion(-14, 10, 82);
+      this.platform6.addToScene(this);
+
+      this.platform7 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform7.posicion(-21, 14, 90);
+      this.platform7.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -181,7 +197,7 @@ class Juego extends Physijs.Scene {
    createStones() {
       var element = null;
       
-      for (var i = 0 ; i < 10 ; i++) {
+      for (var i = 0 ; i < 5 ; i++) {
          // Textura aleatoria
          if (i % 2 == 0) {
             var texture = new THREE.TextureLoader().load('./imgs/stone1.jpg');
@@ -340,23 +356,15 @@ class Juego extends Physijs.Scene {
       ground.addEventListener('collision',
          function (o,v,r,n) {
             if (o.colisionable) {
+               if (that.player.climbing) {
+                  console.log("HOLAAAAAAA");
+                  loseHeart();
+                  that.player.climbing = false;
+               }
+
                that.startPlatform.objectOnPlatform = false;
                that.player.jump = false;
                that.player.jumping = true;
-            }
-         });
-
-      pared1.addEventListener('collision',
-         function (o,v,r,n) {
-            if (o.colisionable) {
-               loseHeart();
-            }
-         });
-      
-      pared2.addEventListener('collision',
-         function (o,v,r,n) {
-            if (o.colisionable) {
-               loseHeart();
             }
          });
 
@@ -438,13 +446,6 @@ class Juego extends Physijs.Scene {
 
       // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
       this.renderer.render(this, this.getCamera());
-      
-      /*var that = this;
-      onRenderFcts.push(function() {
-         // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
-         that.renderer.render(this, this.getCamera());
-         that.stats.update();
-      })*/
    }
 }
 

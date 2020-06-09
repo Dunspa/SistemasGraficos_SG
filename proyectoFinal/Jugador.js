@@ -47,6 +47,7 @@ class Jugador extends ObjetoFisico {
                   that.scale.set(that.object.scale.x, that.object.scale.y, that.object.scale.z);
 
                   that.object.colisionable = true;
+                  that.climbing = false;
 
                   scene.add(that.object);
                }, null, null);
@@ -96,8 +97,8 @@ class Jugador extends ObjetoFisico {
 
          if (this.jumping) {
             for (var i = 0 ; i < 20 && this.jumping ; i++) {
-               this.object.translateY(0.015);
-               this.object.translateZ(0.01);
+               this.object.translateY(0.02);
+               this.object.translateZ(0.015);
                this.object.__dirtyPosition = true;
                this.height += 0.015;
 
@@ -108,8 +109,8 @@ class Jugador extends ObjetoFisico {
          } else {
             var bajar = true;
             for (var i = 0 ; i < 20 && bajar ; i++) {
-               this.object.translateY(-0.02);
-               this.object.translateZ(0.01);
+               this.object.translateY(-0.025);
+               this.object.translateZ(0.015);
                this.object.__dirtyPosition = true;
                this.height -= 0.02;
 
