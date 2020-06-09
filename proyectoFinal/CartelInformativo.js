@@ -1,39 +1,37 @@
 // Jose Luis Gallego Peña
 // Un cartel en 3d con una texto
-class CartelInformativo extends ObjetoFisico {
-   constructor() {
+class CartelInformativo extends THREE.Object3D {
+   constructor(text) {
       super();
 
       // Cartel
+      /*var map = new THREE.TextureLoader().load(text);
+      var material = new THREE.SpriteMaterial({ map: map, color: 0xffffff });
+      this.object = new THREE.Sprite(material);
+      this.object.scale.set(2, 2, 1);*/
 
-      // Crear texto
-      /*var dynamicTexture = new THREEx.DynamicTexture(512,512)
-	   dynamicTexture.context.font = "bolder 90px Verdana";
-	   dynamicTexture.texture.anisotropy = renderer.getMaxAnisotropy()
-	   updateFcts.push(function(delta, now){
-         // build the text which contains the time
-         var present	= new Date()
-         var text	= pad(present.getHours(), 2, '0')
-            + ':' + pad(present.getMinutes(), 2, '0')
-            + ':' + pad(present.getSeconds(), 2, '0')
-         function pad(n, width, z) {
-            z = z || '0';
-            n = n + '';
-            return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-         }
+      var loader = new THREE.FontLoader();
+      var that = this;
+      loader.load( 'Roboto_Regular.json', function (font) {
+         var geometry = new THREE.TextGeometry(text, {
+            font: font,
+            size: 80,
+            height: 5,
+            curveSegments: 12,
+            bevelEnabled: false,
+            bevelThickness: 10,
+            bevelSize: 8,
+            bevelOffset: 0,
+            bevelSegments: 5
+         });
 
-         // update the text
-         dynamicTexture.clear('cyan')
-            .drawText(text, undefined, 256, 'red')
-	   });*/
+         geometry.rotateY(Math.PI);
+         geometry.scale(0.006, 0.006, 0.006)
 
-      var texture = new THREE.TextureLoader().load('./imgs/ladrillo-bump.png');
-      this.object = new Physijs.BoxMesh (
-         new THREE.BoxGeometry (3,3,0.5),
-         Physijs.createMaterial(
-            new THREE.MeshLambertMaterial({map: texture}), 
-            1, 0),
-         0
-      );
+         var texture = new THREE.TextureLoader().load('./imgs/stone1.jpg');
+         var material = new THREE.MeshBasicMaterial({color: "#000000"});
+
+         that.add(new THREE.Mesh(geometry, material));
+      });
    }
 }

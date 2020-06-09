@@ -38,9 +38,23 @@ class Juego extends Physijs.Scene {
       //this.createStones();
       this.createTower();
 
-      this.cartel = new CartelInformativo();
-      this.cartel.posicion(-5, 3, -120);
-      this.cartel.addToScene(this);
+      // Tutoriales del inicio
+      this.tutorial1 = new CartelInformativo("Usa las teclas WASD \npara moverte");
+      this.tutorial1.position.set(-5, 3, -140);
+      this.add(this.tutorial1);
+      this.tutorial2 = new CartelInformativo("Pulsa la barra\n espaciadora para saltar");
+      this.tutorial2.position.set(-5, 4, -120);
+      this.add(this.tutorial2);
+      this.tutorial3 = new CartelInformativo("Pulsa la tecla E al estar \nencima de una plataforma como\n esta para activarla");
+      this.tutorial3.position.set(-5, 7, -105);
+      this.add(this.tutorial3);
+      this.tutorial4 = new CartelInformativo("Pulsa la tecla E al estar\n cerca de una llave para cogerla\n Con ella podrás abrir puertas \nacercándote a ellas y pulsando E");
+      this.tutorial4.position.set(12, 5, -125);
+      this.add(this.tutorial4);
+
+      this.key = new Llave();
+      this.key.position.set(0, 2, -130);
+      this.add(this.key);
 
       // El personaje principal
       this.player = new Jugador(this);
@@ -102,18 +116,6 @@ class Juego extends Physijs.Scene {
       this.renderer.setSize (window.innerWidth, window.innerHeight);
    }
 
-   // Se procesa, o el movimiento de cámara, con Ctrl; o los impulsos a las figuras.
-   onMouseDown(event) {
-      if (event.ctrlKey) {
-         // Para hacer órbita hay que mantener pulsado Ctrl
-         //this.cameraControl.enabled = true;
-      } else {
-         //this.cameraControl.enabled = false;
-         // Se usa el clic para impulsar cajas y esferas
-         this.pushBox (event);
-      }
-   }
-
    onKeyDown(event) {
       var tecla = event.which || event.keyCode;
 
@@ -126,7 +128,9 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
-         this.startPlatform.startAnimation();
+         if (this.startPlatform.objectOnPlatform) {
+            this.startPlatform.startAnimation();
+         }
       }
    }
 
@@ -290,7 +294,7 @@ class Juego extends Physijs.Scene {
    createGround() {
       var tamaX = 100;
       var tamaY = 300;
-      var resolucion = 10;
+      var resolucion = 30;
       
       var sueloGeometria = new THREE.PlaneGeometry(tamaX, tamaY, resolucion, resolucion);
       // Como material se crea uno a partir de una textura
@@ -391,34 +395,6 @@ class Juego extends Physijs.Scene {
       return this.camera;
    }
    
-   
-   // Una función para empujar o tirar de las figuras
-   
-   pushBox (event) {
-      // Es el ratón el que empuja o tira
-      
-      // Se construye un rayo a partir de la posición del ratón (igual que se hacía con el Picking)
-      var mouse = new THREE.Vector2();
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
-      this.raycaster.setFromCamera (mouse, this.getCamera());
-      
-      // Se busca si hay alguna figura apuntada por el ratón, igual que el Picking
-      var pickedObjects = this.raycaster.intersectObjects(this.todos);
-      if (pickedObjects.length > 0) {
-         // Hay un objeto apuntado por el ratón
-         var objeto = pickedObjects[0].object;
-         // Se obtiene en qué punto de su superficie se ha clicado
-         var pickedPoint = pickedObjects[0].point.clone();
-         // Con ese punto y el centro del objeto se hace el vector que determina la dirección del impulso
-         var offset = pickedPoint.sub(objeto.position).negate();
-         // La fuerza la obtenemos de la interfaz, un escalar, lo usamos para hacer que el vector del impulso tenga la dirección calculada pero que su módulo sea la fuerza leída de la gui
-         var effect = offset.normalize().multiplyScalar(this.guiControls.push);
-         objeto.applyCentralImpulse (effect);
-      }
-         
-   }
-   
    setCameraAspect (ratio) {
       this.camera.aspect = ratio;
       this.camera.updateProjectionMatrix();
@@ -444,7 +420,7 @@ class Juego extends Physijs.Scene {
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
-         //this.updateCamera();
+         this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
          this.player.update(this.copiaRotation, this);
       }
@@ -511,8 +487,6 @@ $(function () {
    
    // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
    window.addEventListener("resize", () => scene.onWindowResize());
-   // Definimos un listener para el mouse down del ratón para los impulsos a las figuras
-   window.addEventListener("mousedown", () => scene.onMouseDown(event), true);
    // Listeners para el movimiento del personaje
    window.addEventListener("keydown", (event) => scene.onKeyDown(event), true);
    window.addEventListener("keyup", (event) => scene.onKeyUp(event));
