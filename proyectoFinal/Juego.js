@@ -51,6 +51,10 @@ class Juego extends Physijs.Scene {
       this.startPlatform.posicion(0, 4, -110);
       this.startPlatform.addToScene(this);
 
+      this.movingPlatform1 = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.2}, 2000);
+      this.movingPlatform1.posicion(-21, 14, 100);
+      this.movingPlatform1.addToScene(this);
+
       // Plataformas fijas
       this.platform1 = new Plataforma(this.player, './imgs/stone2.jpg');
       this.platform1.posicion(0, 2, -115);
@@ -83,6 +87,11 @@ class Juego extends Physijs.Scene {
       this.platform7 = new Plataforma(this.player, './imgs/rustymetal.jpg');
       this.platform7.posicion(-21, 14, 90);
       this.platform7.addToScene(this);
+
+      this.platform8 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform8.escala(2, 1, 2);
+      this.platform8.posicion(-21, 18, 120);
+      this.platform8.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -146,6 +155,10 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "E") {
          if (this.startPlatform.objectOnPlatform) {
             this.startPlatform.startAnimation();
+         }
+
+         if (this.movingPlatform1.objectOnPlatform) {
+            this.movingPlatform1.startAnimation();
          }
          
          if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
@@ -357,7 +370,6 @@ class Juego extends Physijs.Scene {
          function (o,v,r,n) {
             if (o.colisionable) {
                if (that.player.climbing) {
-                  console.log("HOLAAAAAAA");
                   loseHeart();
                   that.player.climbing = false;
                }

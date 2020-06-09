@@ -27,6 +27,7 @@ class PlataformaMovil extends Plataforma {
          })
          .onComplete (function () {
             origen.x = 0.0;
+            that.objectOnPlatform = false;
          });
    }
 

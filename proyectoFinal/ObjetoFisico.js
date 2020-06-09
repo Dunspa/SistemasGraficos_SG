@@ -28,4 +28,8 @@ class ObjetoFisico extends THREE.Object3D {
       this.object.position.set(x, y, z);
       this.object.__dirtyPosition = true;
    }
+
+   escala(x, y, z) {
+      this.object.scale.set(x, y, z);
+   }
 }
