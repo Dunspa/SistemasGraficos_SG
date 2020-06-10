@@ -26,12 +26,12 @@ class Juego extends Physijs.Scene {
 
       // Tutoriales del inicio
       this.tutorial1 = new CartelInformativo("Usa las teclas WASD para moverte\n Puedes empujar rocas moviendote\n hacia ellas");
-      this.tutorial1.position.set(-5, 3, -140);
+      this.tutorial1.position.set(-5, 4, -140);
       this.add(this.tutorial1);
       this.tutorial2 = new CartelInformativo("Pulsa la barra espaciadora para saltar\n Pulsa Q para agacharte");
       this.tutorial2.position.set(-5, 4, -120);
       this.add(this.tutorial2);
-      this.tutorial3 = new CartelInformativo("Pulsa la tecla E al estar \nencima de una plataforma como\n esta para activarla");
+      this.tutorial3 = new CartelInformativo("Pulsa la tecla E al estar encima de una\n plataforma como esta para activarla\n Si lo pulsas estando fuera, reiniciarás su \nposición");
       this.tutorial3.position.set(-5, 7, -105);
       this.add(this.tutorial3);
       this.tutorial4 = new CartelInformativo("Pulsa la tecla E al estar\n cerca de una llave para cogerla\n Con ella podrás abrir puertas \nacercándote a ellas y pulsando E");
@@ -49,10 +49,12 @@ class Juego extends Physijs.Scene {
       // Plataformas móviles
       this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.85}, 8000);
       this.startPlatform.posicion(0, 4, -110);
+      this.startPlatform.savePosition();
       this.startPlatform.addToScene(this);
 
       this.movingPlatform1 = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.2}, 2000);
       this.movingPlatform1.posicion(-21, 14, 100);
+      this.movingPlatform1.savePosition();
       this.movingPlatform1.addToScene(this);
 
       // Plataformas fijas
@@ -89,8 +91,8 @@ class Juego extends Physijs.Scene {
       this.platform7.addToScene(this);
 
       this.platform8 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform8.escala(2, 1, 2);
-      this.platform8.posicion(-21, 18, 120);
+      this.platform8.escala(5, 1, 2);
+      this.platform8.posicion(-15, 18, 120);
       this.platform8.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
@@ -155,10 +157,14 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "E") {
          if (this.startPlatform.objectOnPlatform) {
             this.startPlatform.startAnimation();
+         } else {
+            this.startPlatform.restartPosition();
          }
 
          if (this.movingPlatform1.objectOnPlatform) {
             this.movingPlatform1.startAnimation();
+         } else {
+            this.movingPlatform1.restartPosition();
          }
          
          if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
@@ -234,6 +240,7 @@ class Juego extends Physijs.Scene {
          function (o,v,r,n) {
             if (o.colisionable) {
                that.startPlatform.objectOnPlatform = false;
+               that.movingPlatform1.objectOnPlatform = false;
                that.player.jump = false;
                that.player.jumping = true;
             }
@@ -375,6 +382,7 @@ class Juego extends Physijs.Scene {
                }
 
                that.startPlatform.objectOnPlatform = false;
+               that.movingPlatform1.objectOnPlatform = false;
                that.player.jump = false;
                that.player.jumping = true;
             }

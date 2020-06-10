@@ -9,7 +9,7 @@ class PlataformaMovil extends Plataforma {
       var that = this;
       this.animation = new TWEEN.Tween(origen).to(destino, tiempo)
          .easing(TWEEN.Easing.Cubic.InOut)
-         .onUpdate (function () {
+         .onUpdate(function () {
             if (that.objectOnPlatform) {
                if (dir === 'X') {
                   that.object.translateX(origen.x);
@@ -25,7 +25,7 @@ class PlataformaMovil extends Plataforma {
                that.object.__dirtyPosition = true;
             }
          })
-         .onComplete (function () {
+         .onComplete(function () {
             origen.x = 0.0;
             that.objectOnPlatform = false;
          });
@@ -33,6 +33,16 @@ class PlataformaMovil extends Plataforma {
 
    startAnimation() {
       this.animation.start();
+   }
+
+   restartPosition() {
+      this.object.position.copy(this.pos);
+      this.object.__dirtyPosition = true;
+   }
+
+   savePosition() {
+      this.pos = this.object.position.clone();
+      this.pos.copy(this.object.position);
    }
 }
  
