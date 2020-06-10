@@ -134,12 +134,21 @@ class Juego extends Physijs.Scene {
       this.platform14.addToScene(this);
 
       this.platform15 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform15.posicion(14, 43, 75);
+      this.platform15.posicion(14, 42, 75);
       this.platform15.addToScene(this);
 
       this.platform16 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform16.posicion(10, 47, 80);
+      this.platform16.posicion(10, 45, 75);
       this.platform16.addToScene(this);
+
+      this.platform17 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform17.posicion(6, 48, 75);
+      this.platform17.addToScene(this);
+
+      this.towertop = new Plataforma(this.player, './imgs/stone2.jpg');
+      this.towertop.escala(7, 1, 7);
+      this.towertop.posicion(0, 49, 100);
+      this.towertop.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -300,14 +309,14 @@ class Juego extends Physijs.Scene {
 
    createTower() {
       var geometry = new THREE.CylinderGeometry(20, 20, 50);
-      geometry.translate(0, -25, 0);
+      //geometry.translate(0, -25, 0);
       var texture = new THREE.TextureLoader().load('./imgs/tower.jpg');
       var material = new THREE.MeshPhongMaterial({map: texture});
-      var physiMaterial = Physijs.createMaterial(material, 1.0, 0.0);
+      var physiMaterial = Physijs.createMaterial(material, 1, 0);
       this.tower = new Physijs.CylinderMesh(geometry, physiMaterial, 0);
       
       this.tower.translateZ(100);
-      this.tower.translateY(50);
+      this.tower.translateY(24);
 
       this.add(this.tower);
    }
@@ -380,10 +389,6 @@ class Juego extends Physijs.Scene {
       this.cameraControl.panSpeed = 0.5;
       // Debe orbitar con respecto al punto de mira de la cámara
       this.cameraControl.target = look;
-   }
-
-   changeCamera() {
-
    }
    
    createGround() {
