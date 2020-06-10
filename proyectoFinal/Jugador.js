@@ -41,7 +41,7 @@ class Jugador extends ObjetoFisico {
 
                   that.object.add(modelo);
                   //that.object.position.set(0, 2, -145);
-                  that.object.position.set(0, 70, 110);
+                  that.object.position.set(0, 70, 100);
          
                   that.position.set(that.object.position.x, that.object.position.y, that.object.position.z);
                   that.scale.set(that.object.scale.x, that.object.scale.y, that.object.scale.z);

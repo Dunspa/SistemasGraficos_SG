@@ -4,6 +4,8 @@ class Plataforma extends ObjetoFisico {
       super();
 
       this.objectOnPlatform = false;
+      this.final = false;
+      this.endgame = false;
 
       // Plataforma que recorrerá el camino
       var texture = new THREE.TextureLoader().load(textu);
@@ -23,6 +25,10 @@ class Plataforma extends ObjetoFisico {
                player.jump = false;
                player.jumping = true;
                player.climbing = true;
+            }
+
+            if (that.final) {
+               that.endgame = true;
             }
          });
    }

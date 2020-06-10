@@ -145,10 +145,23 @@ class Juego extends Physijs.Scene {
       this.platform17.posicion(6, 48, 75);
       this.platform17.addToScene(this);
 
-      this.towertop = new Plataforma(this.player, './imgs/stone2.jpg');
+      this.towertop = new Plataforma(this.player, './imgs/tower.jpg');
       this.towertop.escala(7, 1, 7);
       this.towertop.posicion(0, 49, 100);
       this.towertop.addToScene(this);
+
+      this.finalplatform = new Plataforma(this.player, './imgs/moon.jpg');
+      this.finalplatform.escala(4, 2, 4);
+      this.finalplatform.posicion(0, 55, 130);
+      this.finalplatform.final = true;
+      this.finalplatform.addToScene(this);
+
+      // Bloques
+      this.finalblock = new Bloque('./imgs/stone3.jpg');
+      this.finalblock.escala(7, 3, 7);
+      this.finalblock.posicion(0, 50, 100);
+      this.finalblock.addToScene(this);
+      this.finalblock.createConstraint(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -523,6 +536,11 @@ class Juego extends Physijs.Scene {
       }
       this.background.rotateY(0.0005);
 
+      // Fin del juego
+      if (this.finalplatform.endgame) {
+         endGame();
+      }
+
       TWEEN.update();
       
       // Se le pide al motor de física que actualice las figuras según sus leyes
@@ -562,6 +580,14 @@ function addKey() {
 // Eliminar una llave al usarla
 function removeKey() {
    document.getElementById("key").src = "./imgs/nokey.png";
+}
+
+// Termina el juego
+function endGame() {
+   Juego.START = false;
+   document.getElementById("reboot").style.display = "block";
+   document.getElementById("reboot").innerHTML = "<h1>HAS LLEGADO AL FINAL! ¿Quieres volver a jugar?</h1>";
+   document.getElementById("WebGL-output").style.opacity = 0.5;
 }
 
 /// La función principal
