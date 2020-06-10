@@ -117,7 +117,7 @@ class Juego extends Physijs.Scene {
       this.platform12.addToScene(this);
 
       this.platform13 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform13.escala(1, 1, 5);
+      this.platform13.escala(1, 3, 5);
       this.platform13.posicion(25, 35, 80);
       this.platform13.addToScene(this);
       this.platform13obst = new Obstaculo('./imgs/rustymetal.jpg');
@@ -567,7 +567,6 @@ function loseHeart() {
       // Game over
       Juego.START = false;
       document.getElementById("reboot").style.display = "block";
-      document.getElementById("reboot").innerHTML = "<h1>GAME OVER ¿Reiniciar?</h1>";
       document.getElementById("WebGL-output").style.opacity = 0.5;
    }
 }
@@ -585,9 +584,21 @@ function removeKey() {
 // Termina el juego
 function endGame() {
    Juego.START = false;
-   document.getElementById("reboot").style.display = "block";
-   document.getElementById("reboot").innerHTML = "<h1>HAS LLEGADO AL FINAL! ¿Quieres volver a jugar?</h1>";
+   document.getElementById("endgame").style.display = "block";
    document.getElementById("WebGL-output").style.opacity = 0.5;
+}
+
+function reboot() {
+   location.reload();
+}
+
+function start() {
+   document.getElementById("WebGL-output").style.opacity = 1.0;
+   document.getElementById("start").style.display = "none";
+   document.getElementById("reboot").style.display = "none";
+
+   // Animación TWEEN del inicio
+   Juego.ANIMACIONINICIO.start();
 }
 
 /// La función principal
@@ -596,20 +607,6 @@ $(function () {
    var scene = new Juego("#WebGL-output");
 
    // LISTENERS
-   
-   // Se inicia el juego
-   document.getElementById("start").addEventListener("click", function () {
-      document.getElementById("WebGL-output").style.opacity = 1.0;
-      document.getElementById("start").style.display = "none";
-      document.getElementById("reboot").style.display = "none";
-
-      // Animación TWEEN del inicio
-      Juego.ANIMACIONINICIO.start();
-   });
-
-   document.getElementById("reboot").addEventListener("click", function() {
-      location.reload();
-   });
    
    // Cada vez que el usuario cambie el tamaño de la ventana se llama a la función que actualiza la cámara y el renderer
    window.addEventListener("resize", () => scene.onWindowResize());

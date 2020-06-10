@@ -8,7 +8,7 @@ class Obstaculo extends ObjetoFisico {
       this.object = new Physijs.BoxMesh (
          new THREE.BoxGeometry (5,0.2,5),
          Physijs.createMaterial(
-            new THREE.MeshLambertMaterial({map: texture}), 
+            new THREE.MeshLambertMaterial({map: texture, transparent: true, opacity: 0.5}), 
             1, 0),
          0
       );
