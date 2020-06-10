@@ -94,6 +94,10 @@ class Juego extends Physijs.Scene {
       this.platform8.escala(5, 1, 2);
       this.platform8.posicion(-15, 18, 120);
       this.platform8.addToScene(this);
+      this.platform8obst = new Obstaculo('./imgs/rustymetal.jpg');
+      this.platform8obst.escala(2, 50, 2);
+      this.platform8obst.posicion(-10, 25, 120);
+      this.platform8obst.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
