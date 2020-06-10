@@ -47,7 +47,7 @@ class Juego extends Physijs.Scene {
       this.copiaRotation = this.player.rotation.clone();
 
       // Plataformas móviles
-      this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.85}, 8000);
+      this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.95}, 8000);
       this.startPlatform.posicion(0, 4, -110);
       this.startPlatform.savePosition();
       this.startPlatform.addToScene(this);
@@ -87,17 +87,59 @@ class Juego extends Physijs.Scene {
       this.platform6.addToScene(this);
 
       this.platform7 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform7.posicion(-21, 14, 90);
+      this.platform7.posicion(-19, 14, 90);
       this.platform7.addToScene(this);
 
       this.platform8 = new Plataforma(this.player, './imgs/rustymetal.jpg');
       this.platform8.escala(5, 1, 2);
-      this.platform8.posicion(-15, 18, 120);
+      this.platform8.posicion(-14, 18, 120);
       this.platform8.addToScene(this);
       this.platform8obst = new Obstaculo('./imgs/rustymetal.jpg');
       this.platform8obst.escala(2, 50, 2);
       this.platform8obst.posicion(-10, 25, 120);
       this.platform8obst.addToScene(this);
+
+      this.platform9 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform9.posicion(8, 20, 123);
+      this.platform9.addToScene(this);
+
+      this.platform10 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform10.posicion(12, 23, 118);
+      this.platform10.addToScene(this);
+
+      this.platform11 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform11.posicion(19, 27, 113);
+      this.platform11.addToScene(this);
+
+      this.platform12 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform12.escala(3, 1, 3);
+      this.platform12.posicion(25, 31, 100);
+      this.platform12.addToScene(this);
+
+      this.platform13 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform13.escala(1, 1, 5);
+      this.platform13.posicion(25, 35, 80);
+      this.platform13.addToScene(this);
+      this.platform13obst = new Obstaculo('./imgs/rustymetal.jpg');
+      this.platform13obst.escala(1, 25, 1);
+      this.platform13obst.posicion(25, 39, 85);
+      this.platform13obst.addToScene(this);
+      this.platform13obst2 = new Obstaculo('./imgs/rustymetal.jpg');
+      this.platform13obst2.escala(1, 25, 1);
+      this.platform13obst2.posicion(25, 39, 75);
+      this.platform13obst2.addToScene(this);
+   
+      this.platform14 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform14.posicion(17, 38, 70);
+      this.platform14.addToScene(this);
+
+      this.platform15 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform15.posicion(14, 43, 75);
+      this.platform15.addToScene(this);
+
+      this.platform16 = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platform16.posicion(10, 47, 80);
+      this.platform16.addToScene(this);
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -175,6 +217,8 @@ class Juego extends Physijs.Scene {
             this.remove(this.key);
             addKey();
          }
+      } else if (String.fromCharCode(tecla) == "Z") {
+         this.camerabehind = !this.camerabehind;
       }
    }
 
@@ -255,7 +299,8 @@ class Juego extends Physijs.Scene {
    }
 
    createTower() {
-      var geometry = new THREE.CylinderGeometry(20, 20, 100);
+      var geometry = new THREE.CylinderGeometry(20, 20, 50);
+      geometry.translate(0, -25, 0);
       var texture = new THREE.TextureLoader().load('./imgs/tower.jpg');
       var material = new THREE.MeshPhongMaterial({map: texture});
       var physiMaterial = Physijs.createMaterial(material, 1.0, 0.0);
@@ -317,6 +362,7 @@ class Juego extends Physijs.Scene {
       //   El ángulo del campo de visión en grados sexagesimales
       //   La razón de aspecto ancho/alto
       //   Los planos de recorte cercano y lejano
+      this.camerabehind = true;
       this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
       // También se indica dónde se coloca
       this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 800);
@@ -334,6 +380,10 @@ class Juego extends Physijs.Scene {
       this.cameraControl.panSpeed = 0.5;
       // Debe orbitar con respecto al punto de mira de la cámara
       this.cameraControl.target = look;
+   }
+
+   changeCamera() {
+
    }
    
    createGround() {
@@ -438,7 +488,12 @@ class Juego extends Physijs.Scene {
    }
 
    updateCamera(){
-      this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 20); 
+      if (this.camerabehind) {
+         this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z - 20); 
+      } else {
+         this.camera.position.set(this.player.position.x, this.player.position.y + 5, this.player.position.z + 20); 
+      }
+      
       this.camera.up.set(0, 1, 0);
       var look = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z); 
       this.camera.lookAt(look); 
