@@ -26,7 +26,7 @@ class Juego extends Physijs.Scene {
 
       // Tutoriales del inicio
       this.tutorial1 = new CartelInformativo("Usa las teclas WASD para moverte\n Puedes empujar rocas moviendote\n hacia ellas\n Pulsa Z para cambiar la cámara");
-      this.tutorial1.position.set(-5, 4, -140);
+      this.tutorial1.position.set(-5, 5, -140);
       this.add(this.tutorial1);
       this.tutorial2 = new CartelInformativo("Pulsa la barra espaciadora para saltar\nAl terminar ese salto, ulsala otra vez \npara un doble salto\n Pulsa Q para agacharte");
       this.tutorial2.position.set(-5, 5, -120);
@@ -44,12 +44,8 @@ class Juego extends Physijs.Scene {
       this.add(this.key);
 
       this.key2 = new Llave();
-      this.key.position.set(15, 36, 80);
-      this.add(this.key);
-
-      // El personaje principal
-      this.player = new Jugador(this);
-      this.copiaRotation = this.player.rotation.clone();
+      this.key2.position.set(15, 36, 80);
+      this.add(this.key2);
 
       // Plataformas móviles
       this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.95}, 8000);
@@ -203,6 +199,17 @@ class Juego extends Physijs.Scene {
       this.pared4.posicion(8, 50, 140);
       this.pared4.addToScene(this);
 
+      // El personaje principal
+      this.player = new Jugador(this);
+      this.copiaRotation = this.player.rotation.clone();
+
+      // Puertas
+      this.door1 = new Puerta(this, './imgs/wood.jpg');
+      //this.door1.escala(1, 4, 1);
+      this.door1.posicion(0, 2, -140);
+      this.door1.addToScene(this);
+      this.door1.createConstraint(this);
+
       // Bloques
       this.finalblock = new Bloque(this.player, './imgs/stone3.jpg');
       this.finalblock.escala(9, 5, 9.5);
@@ -216,13 +223,6 @@ class Juego extends Physijs.Scene {
       this.finalblock2.addToScene(this);
       this.finalblock2.createConstraint(this);
 
-
-      /*this.finalblock2 = new Bloque('./imgs/stone3.jpg');
-      this.finalblock2.escala(5, 3, 5);
-      this.finalblock2.posicion(0, 50, 100);
-      this.finalblock2.addToScene(this);
-      this.finalblock2.createConstraint(this);*/
-   
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
 
@@ -296,6 +296,13 @@ class Juego extends Physijs.Scene {
             this.movingPlatform1.startAnimation();
          } else {
             this.movingPlatform1.restartPosition();
+         }   
+
+         if (Math.abs(this.door1.position.z) - (Math.abs(this.door1.position.z)) <= 1) {
+            if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
+               this.door1.openDoor();
+               removeKey();
+            }
          }
          
          if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
@@ -378,6 +385,7 @@ class Juego extends Physijs.Scene {
          element.position.set(Math.floor(Math.random() * (50 - -59) ) + -50, 0, -130);
          element.rotation.set(Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2);
 
+         var that = this;
          element.addEventListener('collision',
          function (o,v,r,n) {
             if (o.colisionable) {
@@ -478,7 +486,7 @@ class Juego extends Physijs.Scene {
    createGround() {
       var tamaX = 100;
       var tamaY = 300;
-      var resolucion = 30;
+      var resolucion = 1;
       
       var sueloGeometria = new THREE.PlaneGeometry(tamaX, tamaY, resolucion, resolucion);
       // Como material se crea uno a partir de una textura
@@ -613,7 +621,7 @@ class Juego extends Physijs.Scene {
       }
 
       TWEEN.update();
-      
+
       // Se le pide al motor de física que actualice las figuras según sus leyes
       this.simulate ();
 
@@ -645,6 +653,11 @@ function loseHeart() {
 // Añadir una llave
 function addKey() {
    document.getElementById("key").src = "./imgs/key.png";
+}
+
+// Quitar llave
+function removeKey() {
+   document.getElementById("key").src ="./imgs/nokey.png";
 }
 
 // Eliminar una llave al usarla

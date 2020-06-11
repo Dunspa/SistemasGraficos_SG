@@ -14,10 +14,12 @@ class Bloque extends ObjetoFisico {
       );
       
       this.object.addEventListener('collision', function() {
-         player.jump = false;
-         player.jumping = true;
-         player.climbing = true;
-         player.bajarrapido = false;  
+         if (o.colisionable) {
+            player.jump = false;
+            player.jumping = true;
+            player.climbing = true;
+            player.bajarrapido = false; 
+         } 
       });
    }
 

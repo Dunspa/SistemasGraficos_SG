@@ -1,25 +1,56 @@
 // Jose Luis Gallego Peña
 class Puerta extends ObjetoFisico {
-   constructor(textu) {
+   constructor(scene, textu) {
       super();
 
-      // Plataforma que recorrerá el camino
       var texture = new THREE.TextureLoader().load(textu);
-      this.object = new Physijs.BoxMesh (
-         new THREE.BoxGeometry (1,1,1),
-         Physijs.createMaterial(
-            new THREE.MeshLambertMaterial({map: texture}), 
-            1, 0),
-         1
+      var physiMaterial = Physijs.createMaterial(new THREE.MeshLambertMaterial({map: texture}), 1, 1);
+
+      // El cilindro hace de bisagra
+      var geometry = new THREE.CylinderGeometry(0.35, 0.35, 1.4);
+      this.ref = new Physijs.CylinderMesh (
+         geometry, physiMaterial, 0
+      );
+      
+      // La pieza que gira sobre la bisagra, una caja
+      geometry = new THREE.BoxGeometry (5,1,1);
+      this.hinge = new Physijs.BoxMesh (
+         geometry, physiMaterial, 1
       );
    }
 
-   createConstraint(scene) {
-      var restric = new Physijs.DOFConstraint(this.object, this.object.position);
-      scene.addConstraint(restric);
+   addToScene(scene) {
+      scene.add(this.ref);
+      scene.add(this.hinge);
+   }
 
-      // Límites al movimiento, distancia mínima y máxima
-      restric.setLinearLowerLimit(new THREE.Vector3(-10, 0, -10)); 
-      restric.setLinearUpperLimit(new THREE.Vector3(10, 0, 10)); 
+   createConstraint(scene) {
+      // Restricción
+      this.restric = new Physijs.HingeConstraint (
+         this.hinge, this.ref, 
+         this.ref.position, 
+         new THREE.Vector3(0, 1, 0)
+      );
+      scene.addConstraint(this.restric);
+      
+      this.restric.setLimits(0, Math.PI/2, 0.5, 0.5);
+      this.restric.enableAngularMotor(0, 0);
+   }
+
+   openDoor() {
+      this.restric.enableAngularMotor(10, 10);
+      //this.restric.enableAngularMotor(0, 0);
+   }
+
+   posicion(x, y, z) {
+      this.ref.position.set(x, y, z);
+      this.hinge.position.set(this.ref.position.x+2.5+0.35, this.ref.position.y, this.ref.position.z);
+      this.ref.__dirtyPosition = true;
+      this.hinge.__dirtyPosition = true;
+   }
+
+   escala(x, y, z) {
+      this.ref.scale.set(x, y, z);
+      this.hinge.scale.set(x, y, z);
    }
 }

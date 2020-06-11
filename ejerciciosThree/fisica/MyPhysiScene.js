@@ -322,7 +322,7 @@ class MyPhysiScene extends Physijs.Scene {
       .onChange(function (value) {
         if (value) {
           // Movimiento manual de la bisagra
-          that.constraintHinge.enableAngularMotor (10, 10);
+          that.climbing.enableAngularMotor (10, 10);
         } else {
           // Se apaga el motor para que se mueva con gravedad y colisiones
           that.constraintHinge.disableMotor();
