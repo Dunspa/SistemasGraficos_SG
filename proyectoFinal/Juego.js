@@ -270,6 +270,10 @@ class Juego extends Physijs.Scene {
 
       if (tecla == 32) {
          this.player.jump = true;
+
+         if (!this.player.jumping) {
+            this.player.jumping2 = true;
+         }
       } 
    }
 
