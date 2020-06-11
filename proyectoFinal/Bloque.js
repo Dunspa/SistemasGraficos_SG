@@ -1,6 +1,6 @@
 // Jose Luis Gallego Peña
 class Bloque extends ObjetoFisico {
-   constructor(textu) {
+   constructor(player, textu) {
       super();
 
       // Plataforma que recorrerá el camino
@@ -9,9 +9,16 @@ class Bloque extends ObjetoFisico {
          new THREE.BoxGeometry (1,1,1),
          Physijs.createMaterial(
             new THREE.MeshLambertMaterial({map: texture}), 
-            1, 0),
-         1
+            0.5, 0),
+         5
       );
+      
+      this.object.addEventListener('collision', function() {
+         player.jump = false;
+         player.jumping = true;
+         player.climbing = true;
+         player.bajarrapido = false;  
+      });
    }
 
    createConstraint(scene) {
@@ -19,7 +26,7 @@ class Bloque extends ObjetoFisico {
       scene.addConstraint(restric);
 
       // Límites al movimiento, distancia mínima y máxima
-      restric.setLinearLowerLimit(new THREE.Vector3(-10, 0, -10)); 
-      restric.setLinearUpperLimit(new THREE.Vector3(10, 0, 10)); 
+      restric.setLinearLowerLimit(new THREE.Vector3(-60, -10, -60)); 
+      restric.setLinearUpperLimit(new THREE.Vector3(60, 0, 60)); 
    }
 }

@@ -25,7 +25,7 @@ class Juego extends Physijs.Scene {
       this.createTower();
 
       // Tutoriales del inicio
-      this.tutorial1 = new CartelInformativo("Usa las teclas WASD para moverte\n Puedes empujar rocas moviendote\n hacia ellas");
+      this.tutorial1 = new CartelInformativo("Usa las teclas WASD para moverte\n Puedes empujar rocas moviendote\n hacia ellas\n Pulsa Z para cambiar la cámara");
       this.tutorial1.position.set(-5, 4, -140);
       this.add(this.tutorial1);
       this.tutorial2 = new CartelInformativo("Pulsa la barra espaciadora para saltar\nAl terminar ese salto, ulsala otra vez \npara un doble salto\n Pulsa Q para agacharte");
@@ -99,7 +99,7 @@ class Juego extends Physijs.Scene {
       this.platform8.escala(5, 1, 2);
       this.platform8.posicion(-14, 18, 120);
       this.platform8.addToScene(this);
-      this.platform8obst = new Obstaculo('./imgs/rustymetal.jpg');
+      this.platform8obst = new Obstaculo('./imgs/rustymetal.jpg', 0.5);
       this.platform8obst.escala(2, 50, 2);
       this.platform8obst.posicion(-10, 25, 120);
       this.platform8obst.addToScene(this);
@@ -125,11 +125,11 @@ class Juego extends Physijs.Scene {
       this.platform13.escala(3, 3, 5);
       this.platform13.posicion(30, 35, 80);
       this.platform13.addToScene(this);
-      this.platform13obst = new Obstaculo('./imgs/rustymetal.jpg');
+      this.platform13obst = new Obstaculo('./imgs/rustymetal.jpg', 0.5);
       this.platform13obst.escala(3, 25, 1);
       this.platform13obst.posicion(30, 39, 85);
       this.platform13obst.addToScene(this);
-      this.platform13obst2 = new Obstaculo('./imgs/rustymetal.jpg');
+      this.platform13obst2 = new Obstaculo('./imgs/rustymetal.jpg', 0.5);
       this.platform13obst2.escala(3, 25, 1);
       this.platform13obst2.posicion(30, 39, 75);
       this.platform13obst2.addToScene(this);
@@ -158,19 +158,70 @@ class Juego extends Physijs.Scene {
       this.towertop.escala(7, 1, 7);
       this.towertop.posicion(0, 49, 100);
       this.towertop.addToScene(this);
+      this.towertopobst1 = new Obstaculo('./imgs/moon.jpg', 1);
+      this.towertopobst1.escala(3, 50, 2);
+      this.towertopobst1.posicion(13, 52, 110);
+      this.towertopobst1.addToScene(this);
+      this.towertopobst2 = new Obstaculo('./imgs/moon.jpg', 1);
+      this.towertopobst2.escala(3, 50, 2);
+      this.towertopobst2.posicion(-13, 52, 110);
+      this.towertopobst2.addToScene(this);
 
       this.finalplatform = new Plataforma(this.player, './imgs/moon.jpg');
-      this.finalplatform.escala(4, 2, 4);
-      this.finalplatform.posicion(0, 55, 130);
+      this.finalplatform.escala(3, 2, 3);
+      this.finalplatform.posicion(0, 55, 160);
       this.finalplatform.final = true;
       this.finalplatform.addToScene(this);
+      this.finalplatformobst1 = new Plataforma(this.player, './imgs/moon.jpg');
+      this.finalplatformobst1.escala(3, 2, 3);
+      this.finalplatformobst1.posicion(0, 43, 125);
+      this.finalplatformobst1.addToScene(this);
+      this.pared1 = new Plataforma(this.player, './imgs/moon.jpg'); 
+      this.pared1.escala(2, 2, 2);
+      this.pared1.rotaX(Math.PI/2);
+      this.pared1.posicion(0, 42, 135);
+      this.pared1.addToScene(this);
+      this.finalplatformobst2 = new Plataforma(this.player, './imgs/moon.jpg');
+      this.finalplatformobst2.escala(3, 2, 3);
+      this.finalplatformobst2.posicion(0, 47, 140);
+      this.finalplatformobst2.addToScene(this);
+      this.pared2 = new Plataforma(this.player, './imgs/moon.jpg'); 
+      this.pared2.escala(2, 2, 2);
+      this.pared2.rotaX(Math.PI/2);
+      this.pared2.posicion(0, 50, 150);
+      this.pared2.addToScene(this);
+
+      this.pared3 = new Plataforma(this.player, './imgs/moon.jpg'); 
+      this.pared3.escala(10, 2, 10);
+      this.pared3.rotaZ(Math.PI/2);
+      this.pared3.posicion(-8, 50, 140);
+      this.pared3.addToScene(this);
+
+      this.pared4 = new Plataforma(this.player, './imgs/moon.jpg'); 
+      this.pared4.escala(10, 2, 10);
+      this.pared4.rotaZ(Math.PI/2);
+      this.pared4.posicion(8, 50, 140);
+      this.pared4.addToScene(this);
 
       // Bloques
-      this.finalblock = new Bloque('./imgs/stone3.jpg');
-      this.finalblock.escala(7, 3, 7);
-      this.finalblock.posicion(0, 50, 100);
+      this.finalblock = new Bloque(this.player, './imgs/stone3.jpg');
+      this.finalblock.escala(9, 5, 9.5);
+      this.finalblock.posicion(-8, 53, 90);
       this.finalblock.addToScene(this);
       this.finalblock.createConstraint(this);
+
+      this.finalblock2 = new Bloque(this.player, './imgs/stone3.jpg');
+      this.finalblock2.escala(9, 5, 9.5);
+      this.finalblock2.posicion(8, 53, 100);
+      this.finalblock2.addToScene(this);
+      this.finalblock2.createConstraint(this);
+
+
+      /*this.finalblock2 = new Bloque('./imgs/stone3.jpg');
+      this.finalblock2.escala(5, 3, 5);
+      this.finalblock2.posicion(0, 50, 100);
+      this.finalblock2.addToScene(this);
+      this.finalblock2.createConstraint(this);*/
    
       // Tendremos una cámara con un control de movimiento con el ratón
       this.createCamera();
@@ -232,6 +283,9 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
+         this.finalblock.posicion(-8, 53, 90);
+         this.finalblock2.posicion(8, 53, 100);
+
          if (this.startPlatform.objectOnPlatform) {
             this.startPlatform.startAnimation();
          } else {
@@ -246,6 +300,11 @@ class Juego extends Physijs.Scene {
          
          if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
             this.remove(this.key);
+            addKey();
+         }
+
+         if (Math.abs(this.player.position.z) - (Math.abs(this.key2.position.z)) <= 1) {
+            this.remove(this.key2);
             addKey();
          }
       } else if (String.fromCharCode(tecla) == "Z") {
@@ -335,7 +394,6 @@ class Juego extends Physijs.Scene {
 
    createTower() {
       var geometry = new THREE.CylinderGeometry(20, 20, 50);
-      //geometry.translate(0, -25, 0);
       var texture = new THREE.TextureLoader().load('./imgs/tower.jpg');
       var material = new THREE.MeshPhongMaterial({map: texture});
       var physiMaterial = Physijs.createMaterial(material, 1, 0);
@@ -543,7 +601,7 @@ class Juego extends Physijs.Scene {
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
-         //this.updateCamera();
+         this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
          this.player.update(this.copiaRotation, this);
       }

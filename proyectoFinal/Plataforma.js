@@ -25,6 +25,7 @@ class Plataforma extends ObjetoFisico {
                player.jump = false;
                player.jumping = true;
                player.climbing = true;
+               player.bajarrapido = true; 
             }
 
             if (that.final) {

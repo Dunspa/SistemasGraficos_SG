@@ -40,14 +40,15 @@ class Jugador extends ObjetoFisico {
                   that.object = new Physijs.BoxMesh(geometriaCollider, matFisico, 25.0);
 
                   that.object.add(modelo);
-                  that.object.position.set(0, 2, -145);
-                  //that.object.position.set(0, 70, 100);
+                  //that.object.position.set(0, 2, -145);
+                  that.object.position.set(0, 70, 100);
          
                   that.position.set(that.object.position.x, that.object.position.y, that.object.position.z);
                   that.scale.set(that.object.scale.x, that.object.scale.y, that.object.scale.z);
 
                   that.object.colisionable = true;
                   that.climbing = false;
+                  that.bajarrapido = true;
 
                   scene.add(that.object);
                }, null, null);
@@ -120,15 +121,17 @@ class Jugador extends ObjetoFisico {
                }
             }
          } else {
-            var bajar = true;
-            for (var i = 0 ; i < 20 && bajar ; i++) {
-               this.object.translateY(-0.025);
-               this.object.translateZ(0.015);
-               this.object.__dirtyPosition = true;
-               this.height -= 0.02;
+            if (this.bajarrapido) {
+               var bajar = true;
+               for (var i = 0 ; i < 20 && bajar ; i++) {
+                  this.object.translateY(-0.025);
+                  this.object.translateZ(0.015);
+                  this.object.__dirtyPosition = true;
+                  this.height -= 0.02;
 
-               if (this.height == 0) {
-                  bajar = false;
+                  if (this.height == 0) {
+                     bajar = false;
+                  }
                }
             }
          }

@@ -32,4 +32,12 @@ class ObjetoFisico extends THREE.Object3D {
    escala(x, y, z) {
       this.object.scale.set(x, y, z);
    }
+
+   rotaX(val) {
+      this.object.rotateX(val);
+   }
+
+   rotaZ(val) {
+      this.object.rotateZ(val);
+   }
 }
