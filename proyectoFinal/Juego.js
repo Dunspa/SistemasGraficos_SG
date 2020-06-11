@@ -28,8 +28,8 @@ class Juego extends Physijs.Scene {
       this.tutorial1 = new CartelInformativo("Usa las teclas WASD para moverte\n Puedes empujar rocas moviendote\n hacia ellas");
       this.tutorial1.position.set(-5, 4, -140);
       this.add(this.tutorial1);
-      this.tutorial2 = new CartelInformativo("Pulsa la barra espaciadora para saltar\n Pulsa Q para agacharte");
-      this.tutorial2.position.set(-5, 4, -120);
+      this.tutorial2 = new CartelInformativo("Pulsa la barra espaciadora para saltar\nAl terminar ese salto, ulsala otra vez \npara un doble salto\n Pulsa Q para agacharte");
+      this.tutorial2.position.set(-5, 5, -120);
       this.add(this.tutorial2);
       this.tutorial3 = new CartelInformativo("Pulsa la tecla E al estar encima de una\n plataforma como esta para activarla\n Si lo pulsas estando fuera, reiniciarás su \nposición");
       this.tutorial3.position.set(-5, 7, -105);
@@ -38,8 +38,13 @@ class Juego extends Physijs.Scene {
       this.tutorial4.position.set(12, 5, -125);
       this.add(this.tutorial4);
 
+      // Llaves
       this.key = new Llave();
       this.key.position.set(0, 2, -130);
+      this.add(this.key);
+
+      this.key2 = new Llave();
+      this.key.position.set(15, 36, 80);
       this.add(this.key);
 
       // El personaje principal
@@ -117,17 +122,21 @@ class Juego extends Physijs.Scene {
       this.platform12.addToScene(this);
 
       this.platform13 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform13.escala(1, 3, 5);
-      this.platform13.posicion(25, 35, 80);
+      this.platform13.escala(3, 3, 5);
+      this.platform13.posicion(30, 35, 80);
       this.platform13.addToScene(this);
       this.platform13obst = new Obstaculo('./imgs/rustymetal.jpg');
-      this.platform13obst.escala(1, 25, 1);
-      this.platform13obst.posicion(25, 39, 85);
+      this.platform13obst.escala(3, 25, 1);
+      this.platform13obst.posicion(30, 39, 85);
       this.platform13obst.addToScene(this);
       this.platform13obst2 = new Obstaculo('./imgs/rustymetal.jpg');
-      this.platform13obst2.escala(1, 25, 1);
-      this.platform13obst2.posicion(25, 39, 75);
+      this.platform13obst2.escala(3, 25, 1);
+      this.platform13obst2.posicion(30, 39, 75);
       this.platform13obst2.addToScene(this);
+
+      this.platformkey = new Plataforma(this.player, './imgs/rustymetal.jpg');
+      this.platformkey.posicion(15, 35, 80);
+      this.platformkey.addToScene(this);
    
       this.platform14 = new Plataforma(this.player, './imgs/rustymetal.jpg');
       this.platform14.posicion(17, 38, 70);
@@ -534,7 +543,7 @@ class Juego extends Physijs.Scene {
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
-         this.updateCamera();
+         //this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
          this.player.update(this.copiaRotation, this);
       }
