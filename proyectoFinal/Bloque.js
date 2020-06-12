@@ -13,7 +13,7 @@ class Bloque extends ObjetoFisico {
          5
       );
       
-      this.object.addEventListener('collision', function() {
+      this.object.addEventListener('collision', function(o,v,r,n) {
          if (o.colisionable) {
             player.jump = false;
             player.jumping = true;

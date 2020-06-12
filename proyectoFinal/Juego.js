@@ -21,7 +21,7 @@ class Juego extends Physijs.Scene {
       // Construimos los distinos elementos que tendremos en la escena
 
       this.createBackground();
-      this.createStones();
+      //this.createStones();
       this.createTower();
 
       // Tutoriales del inicio
@@ -35,12 +35,16 @@ class Juego extends Physijs.Scene {
       this.tutorial3.position.set(-5, 7, -105);
       this.add(this.tutorial3);
       this.tutorial4 = new CartelInformativo("Pulsa la tecla E al estar\n cerca de una llave para cogerla\n Con ella podrás abrir puertas \nacercándote a ellas y pulsando E");
-      this.tutorial4.position.set(12, 5, -125);
+      this.tutorial4.position.set(12, 5, -135);
       this.add(this.tutorial4);
+
+      // El personaje principal
+      this.player = new Jugador(this);
+      this.copiaRotation = this.player.rotation.clone();
 
       // Llaves
       this.key = new Llave();
-      this.key.position.set(0, 2, -130);
+      this.key.position.set(0, 2, -135);
       this.add(this.key);
 
       this.key2 = new Llave();
@@ -160,7 +164,7 @@ class Juego extends Physijs.Scene {
       this.towertopobst1.addToScene(this);
       this.towertopobst2 = new Obstaculo('./imgs/moon.jpg', 1);
       this.towertopobst2.escala(3, 50, 2);
-      this.towertopobst2.posicion(-13, 52, 110);
+      this.towertopobst2.posicion(-15, 52, 110);
       this.towertopobst2.addToScene(this);
 
       this.finalplatform = new Plataforma(this.player, './imgs/moon.jpg');
@@ -199,16 +203,16 @@ class Juego extends Physijs.Scene {
       this.pared4.posicion(8, 50, 140);
       this.pared4.addToScene(this);
 
-      // El personaje principal
-      this.player = new Jugador(this);
-      this.copiaRotation = this.player.rotation.clone();
-
       // Puertas
       this.door1 = new Puerta(this, './imgs/wood.jpg');
-      //this.door1.escala(1, 4, 1);
-      this.door1.posicion(0, 2, -140);
+      this.door1.posicion(5, 4, 60);
       this.door1.addToScene(this);
       this.door1.createConstraint(this);
+
+      this.door2 = new Puerta(this, './imgs/wood.jpg');
+      this.door2.posicion(5, 51, 103);
+      this.door2.addToScene(this);
+      this.door2.createConstraint(this);
 
       // Bloques
       this.finalblock = new Bloque(this.player, './imgs/stone3.jpg');
@@ -283,9 +287,6 @@ class Juego extends Physijs.Scene {
       } else if (String.fromCharCode(tecla) == "D") {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
-         this.finalblock.posicion(-8, 53, 90);
-         this.finalblock2.posicion(8, 53, 100);
-
          if (this.startPlatform.objectOnPlatform) {
             this.startPlatform.startAnimation();
          } else {
@@ -298,11 +299,21 @@ class Juego extends Physijs.Scene {
             this.movingPlatform1.restartPosition();
          }   
 
-         if (Math.abs(this.door1.position.z) - (Math.abs(this.door1.position.z)) <= 1) {
+         if (Math.abs(this.door1.position.z) - (Math.abs(this.door1.position.z)) <= 0.5) {
             if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
                this.door1.openDoor();
                removeKey();
             }
+         }
+
+         if (Math.abs(this.door2.position.z) - (Math.abs(this.door2.position.z)) <= 0.5) {
+            if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
+               this.door2.openDoor();
+               removeKey();
+            } 
+         } else {
+            this.finalblock.posicion(-8, 53, 90);
+            this.finalblock2.posicion(8, 53, 100);
          }
          
          if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
