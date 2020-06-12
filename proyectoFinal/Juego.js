@@ -377,44 +377,6 @@ class Juego extends Physijs.Scene {
       this.add(this.background);
    }
 
-   createStones() {
-      var element = null;
-      
-      for (var i = 0 ; i < 5 ; i++) {
-         // Textura aleatoria
-         if (i % 2 == 0) {
-            var texture = new THREE.TextureLoader().load('./imgs/stone1.jpg');
-         } else {
-            var texture = new THREE.TextureLoader().load('./imgs/stone2.jpg');
-         }
-
-         element = new Physijs.BoxMesh (
-            new THREE.BoxGeometry (1,1,1),
-            Physijs.createMaterial(
-               new THREE.MeshLambertMaterial({map: texture}), 
-               1, 0),
-            20.0
-         );
-
-         element.scale.set(Math.random()+1, Math.random()+2, Math.random()+1);
-         element.position.set(Math.floor(Math.random() * (50 - -59) ) + -50, 0, -130);
-         element.rotation.set(Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2);
-
-         var that = this;
-         element.addEventListener('collision',
-         function (o,v,r,n) {
-            if (o.colisionable) {
-               that.startPlatform.objectOnPlatform = false;
-               that.movingPlatform1.objectOnPlatform = false;
-               that.player.jump = false;
-               that.player.jumping = true;
-            }
-         });
-         
-         this.add (element);
-      }
-   }
-
    createTower() {
       var geometry = new THREE.CylinderGeometry(20, 20, 50);
       var texture = new THREE.TextureLoader().load('./imgs/tower.jpg');
@@ -574,16 +536,6 @@ class Juego extends Physijs.Scene {
       this.add(groundAux);
       //this.add(ground);
    }
-
-   createGameOver() {
-      // Al segundo suelo se le añade un listener de colisiones para identificar un game over
-      ground.addEventListener('collision',
-         function (o,v,r,n) {
-            if (o.colisionable)
-               o.material.wireframe = false;
-         }
-      );
-   }
    
    createLights () {
       // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
@@ -691,11 +643,6 @@ function addKey() {
 }
 
 // Quitar llave
-function removeKey() {
-   document.getElementById("key").src = "./imgs/nokey.png";
-}
-
-// Eliminar una llave al usarla
 function removeKey() {
    document.getElementById("key").src = "./imgs/nokey.png";
 }
