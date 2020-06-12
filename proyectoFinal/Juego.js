@@ -52,12 +52,12 @@ class Juego extends Physijs.Scene {
       this.add(this.key2);
 
       // Plataformas móviles
-      this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.95}, 8000);
+      this.startPlatform = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.70}, 8000);
       this.startPlatform.posicion(0, 4, -110);
       this.startPlatform.savePosition();
       this.startPlatform.addToScene(this);
 
-      this.movingPlatform1 = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.2}, 2000);
+      this.movingPlatform1 = new PlataformaMovil(this.player, './imgs/moon.jpg', 'Z', {x: 0.0}, {x: 0.1}, 2000);
       this.movingPlatform1.posicion(-21, 14, 100);
       this.movingPlatform1.savePosition();
       this.movingPlatform1.addToScene(this);
@@ -92,7 +92,7 @@ class Juego extends Physijs.Scene {
       this.platform6.addToScene(this);
 
       this.platform7 = new Plataforma(this.player, './imgs/rustymetal.jpg');
-      this.platform7.posicion(-19, 14, 90);
+      this.platform7.posicion(-19, 12, 90);
       this.platform7.addToScene(this);
 
       this.platform8 = new Plataforma(this.player, './imgs/rustymetal.jpg');
@@ -155,7 +155,7 @@ class Juego extends Physijs.Scene {
       this.platform17.addToScene(this);
 
       this.towertop = new Plataforma(this.player, './imgs/tower.jpg');
-      this.towertop.escala(7, 1, 7);
+      this.towertop.escala(9, 1, 9);
       this.towertop.posicion(0, 49, 100);
       this.towertop.addToScene(this);
       this.towertopobst1 = new Obstaculo('./imgs/moon.jpg', 1);
@@ -223,7 +223,7 @@ class Juego extends Physijs.Scene {
 
       this.finalblock2 = new Bloque(this.player, './imgs/stone3.jpg');
       this.finalblock2.escala(9, 5, 9.5);
-      this.finalblock2.posicion(8, 53, 100);
+      this.finalblock2.posicion(0, 53, 90);
       this.finalblock2.addToScene(this);
       this.finalblock2.createConstraint(this);
 
@@ -251,6 +251,8 @@ class Juego extends Physijs.Scene {
       
       // Un suelo 
       this.createGround();
+
+      this.tiempoAnterior = Date.now();
    }
   
    createRenderer (myCanvas) {
@@ -288,40 +290,42 @@ class Juego extends Physijs.Scene {
          this.player.right = true;
       } else if (String.fromCharCode(tecla) == "E") {
          if (this.startPlatform.objectOnPlatform) {
-            this.startPlatform.startAnimation();
+            this.startPlatform.startAnimation(this.segundosTranscurridos);
+            this.startPlatform.objectOnPlatform = false;
          } else {
             this.startPlatform.restartPosition();
          }
 
          if (this.movingPlatform1.objectOnPlatform) {
-            this.movingPlatform1.startAnimation();
+            this.movingPlatform1.startAnimation(this.segundosTranscurridos);
+            this.movingPlatform1.objectOnPlatform = false;
          } else {
             this.movingPlatform1.restartPosition();
          }   
 
-         if (Math.abs(this.player.position.z) - (Math.abs(this.door1.position.z)) <= 1) {
-            if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
+         if (Math.abs(Math.abs(this.player.position.z) - (Math.abs(this.door1.position.z))) <= 5) {
+            if (document.getElementById("key").getAttribute('src') === "./imgs/key.png") {
                this.door1.openDoor();
                removeKey();
             }
          }
 
-         if (Math.abs(this.player.position.z) - (Math.abs(this.door2.position.z)) <= 1) {
-            if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
+         if (Math.abs(Math.abs(this.player.position.z) - (Math.abs(this.door2.position.z))) <= 5) {
+            if (document.getElementById("key").getAttribute('src') === "./imgs/key.png") {
                this.door2.openDoor();
                removeKey();
             } 
          } else {
             this.finalblock.posicion(-8, 53, 90);
-            this.finalblock2.posicion(8, 53, 100);
+            this.finalblock2.posicion(0, 53, 90);
          }
          
-         if (Math.abs(this.player.position.z) - (Math.abs(this.key.position.z)) <= 1) {
+         if (Math.abs(Math.abs(this.player.position.z) - (Math.abs(this.key.position.z))) <= 1) {
             this.remove(this.key);
             addKey();
          }
 
-         if (Math.abs(this.player.position.z) - (Math.abs(this.key2.position.z)) <= 1) {
+         if (Math.abs(Math.abs(this.player.position.z) - (Math.abs(this.key2.position.z))) <= 1) {
             this.remove(this.key2);
             addKey();
          }
@@ -497,7 +501,7 @@ class Juego extends Physijs.Scene {
    createGround() {
       var tamaX = 100;
       var tamaY = 300;
-      var resolucion = 1;
+      var resolucion = 30;
       
       var sueloGeometria = new THREE.PlaneGeometry(tamaX, tamaY, resolucion, resolucion);
       // Como material se crea uno a partir de una textura
@@ -550,10 +554,25 @@ class Juego extends Physijs.Scene {
             }
          });
 
+         groundAux.addEventListener('collision',
+         function (o,v,r,n) {
+            if (o.colisionable) {
+               if (that.player.climbing) {
+                  loseHeart();
+                  that.player.climbing = false;
+               }
+
+               that.startPlatform.objectOnPlatform = false;
+               that.movingPlatform1.objectOnPlatform = false;
+               that.player.jump = false;
+               that.player.jumping = true;
+            }
+         });
+
       this.add(pared1);
       this.add(pared2);
       this.add(groundAux);
-      this.add(ground);
+      //this.add(ground);
    }
 
    createGameOver() {
@@ -616,13 +635,16 @@ class Juego extends Physijs.Scene {
       // Se actualizan los elementos de la escena para cada frame
       // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
       this.spotLight.intensity = 0.5;
+
+      var tiempoActual = Date.now();
+      this.segundosTranscurridos = (tiempoActual - this.tiempoAnterior) / 1000.0;
       
       // Se actualiza la posición de la cámara según su controlador
       if (Juego.START) {
          this.cameraControl.update();
          this.updateCamera();
          this.copiaRotation.copy(this.player.rotation);
-         this.player.update(this.copiaRotation, this);
+         this.player.update(this.copiaRotation, this, this.segundosTranscurridos);
       }
       this.background.rotateY(0.0005);
 
@@ -638,6 +660,8 @@ class Juego extends Physijs.Scene {
 
       // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
       this.renderer.render(this, this.getCamera());
+
+      this.tiempoAnterior = tiempoActual;
    }
 }
 
@@ -668,7 +692,7 @@ function addKey() {
 
 // Quitar llave
 function removeKey() {
-   document.getElementById("key").src ="./imgs/nokey.png";
+   document.getElementById("key").src = "./imgs/nokey.png";
 }
 
 // Eliminar una llave al usarla

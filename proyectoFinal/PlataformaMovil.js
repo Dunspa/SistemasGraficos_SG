@@ -4,34 +4,40 @@
 class PlataformaMovil extends Plataforma {
    constructor(player, textu, dir, origen, destino, tiempo) {
       super(player, textu);
+      this.player = player;
+      this.dir = dir;
+      this.origen = origen;
+      this.destino = destino;
+      this.tiempo = tiempo;
+   }
 
+   startAnimation(segundosTranscurridos) {
       // Animacion de la plataforma
+      var velocidadT = 50;
       var that = this;
-      this.animation = new TWEEN.Tween(origen).to(destino, tiempo)
+      this.animation = new TWEEN.Tween(this.origen).to(this.destino, this.tiempo)
          .easing(TWEEN.Easing.Cubic.InOut)
          .onUpdate(function () {
             if (that.objectOnPlatform) {
-               if (dir === 'X') {
-                  that.object.translateX(origen.x);
-                  player.translateX(origen.x);
-               } else if (dir === 'Y') {
-                  that.object.translateY(origen.x);
-                  player.translateY(origen.x);
-               } else if (dir === 'Z') {
-                  that.object.translateZ(origen.x);
-                  player.translateZ(origen.x);
+               if (that.dir === 'X') {
+                  that.object.translateX(that.origen.x * segundosTranscurridos * velocidadT);
+                  that.player.translateX(that.origen.x * segundosTranscurridos * velocidadT);
+               } else if (that.dir === 'Y') {
+                  that.object.translateY(that.origen.x * segundosTranscurridos * velocidadT);
+                  that.player.translateY(that.origen.x * segundosTranscurridos * velocidadT);
+               } else if (that.dir === 'Z') {
+                  that.object.translateZ(that.origen.x * segundosTranscurridos * velocidadT);
+                  that.player.translateZ(that.origen.x * segundosTranscurridos * velocidadT);
                }
 
                that.object.__dirtyPosition = true;
             }
          })
          .onComplete(function () {
-            origen.x = 0.0;
+            that.origen.x = 0.0;
             that.objectOnPlatform = false;
          });
-   }
 
-   startAnimation() {
       this.animation.start();
    }
 

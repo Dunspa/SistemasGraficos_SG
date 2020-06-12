@@ -58,24 +58,26 @@ class Jugador extends ObjetoFisico {
       this.maxi = true;
    }
 
-   update(copiaRotation, scene) {
+   update(copiaRotation, scene, segundosTranscurridos) {
       this.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
       this.object.rotation.copy(copiaRotation);
       this.object.__dirtyRotation = true;
+      var velocidadT = 65;
+      var velocidadR = 50;
 
       if (this.forward) {
-         this.object.translateZ(0.2);
+         this.object.translateZ(0.2 * segundosTranscurridos * velocidadT);
          this.object.__dirtyPosition = true;
       } else if (this.backward) {
-         this.object.translateZ(-0.2);
+         this.object.translateZ(-0.2 * segundosTranscurridos * velocidadT);
          this.object.__dirtyPosition = true;
       }
 
       if (this.left) {
-         this.object.rotateY(0.1);
+         this.object.rotateY(0.1 * segundosTranscurridos * velocidadR);
          this.object.__dirtyRotation = true;
       } else if (this.right) {
-         this.object.rotateY(-0.1);
+         this.object.rotateY(-0.1 * segundosTranscurridos * velocidadR);
          this.object.__dirtyRotation = true;
       }
 
@@ -98,8 +100,8 @@ class Jugador extends ObjetoFisico {
 
          if (this.jumping) {
             for (var i = 0 ; i < 20 && this.jumping ; i++) {
-               this.object.translateY(0.02);
-               this.object.translateZ(0.015);
+               this.object.translateY(0.02 * segundosTranscurridos * velocidadT);
+               this.object.translateZ(0.015 * segundosTranscurridos * velocidadT);
                this.object.__dirtyPosition = true;
                this.height += 0.015;
 
@@ -109,8 +111,8 @@ class Jugador extends ObjetoFisico {
             }
          } else if (this.jumping2) {
             for (var i = 0 ; i < 20 && this.jumping2 ; i++) {
-               this.object.translateY(0.02);
-               this.object.translateZ(0.015);
+               this.object.translateY(0.02 * segundosTranscurridos * velocidadT);
+               this.object.translateZ(0.015 * segundosTranscurridos * velocidadT);
                this.object.__dirtyPosition = true;
                this.height += 0.015;
 
@@ -122,8 +124,8 @@ class Jugador extends ObjetoFisico {
             if (this.bajarrapido) {
                var bajar = true;
                for (var i = 0 ; i < 20 && bajar ; i++) {
-                  this.object.translateY(-0.025);
-                  this.object.translateZ(0.015);
+                  this.object.translateY(-0.025 * segundosTranscurridos * velocidadT);
+                  this.object.translateZ(0.015 * segundosTranscurridos * velocidadT);
                   this.object.__dirtyPosition = true;
                   this.height -= 0.02;
 
