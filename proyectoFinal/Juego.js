@@ -205,7 +205,7 @@ class Juego extends Physijs.Scene {
 
       // Puertas
       this.door1 = new Puerta(this, './imgs/wood.jpg');
-      this.door1.posicion(5, 4, 60);
+      this.door1.posicion(5, 6, 65);
       this.door1.addToScene(this);
       this.door1.createConstraint(this);
 
@@ -299,14 +299,14 @@ class Juego extends Physijs.Scene {
             this.movingPlatform1.restartPosition();
          }   
 
-         if (Math.abs(this.door1.position.z) - (Math.abs(this.door1.position.z)) <= 0.5) {
+         if (Math.abs(this.player.position.z) - (Math.abs(this.door1.position.z)) <= 1) {
             if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
                this.door1.openDoor();
                removeKey();
             }
          }
 
-         if (Math.abs(this.door2.position.z) - (Math.abs(this.door2.position.z)) <= 0.5) {
+         if (Math.abs(this.player.position.z) - (Math.abs(this.door2.position.z)) <= 1) {
             if (document.getElementById("key").getAttribute('src') == "./imgs/key.png") {
                this.door2.openDoor();
                removeKey();

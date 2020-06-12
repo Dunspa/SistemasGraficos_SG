@@ -49,6 +49,7 @@ class Puerta extends ObjetoFisico {
       this.hinge.position.set(this.ref.position.x-6, this.ref.position.y, this.ref.position.z+0.2);
       this.ref.__dirtyPosition = true;
       this.hinge.__dirtyPosition = true;
+      this.position.set(this.hinge.position.x, this.hinge.position.y, this.hinge.position.z);
    }
 
    escala(x, y, z) {
